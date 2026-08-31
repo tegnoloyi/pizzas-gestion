@@ -56,13 +56,13 @@
         $dir_especial = null;
 
         if($es_especial) {
-            $pespecial = \Illuminate\Support\Facades\DB::table('PEspeciales')
-                ->leftJoin('Clientes', 'PEspeciales.id_clie', '=', 'Clientes.id_clie')
-                ->select('PEspeciales.*', 'Clientes.nombre as cnombre', 'Clientes.apellido as capellido', 'Clientes.telefono')
+            $pespecial = \Illuminate\Support\Facades\DB::table('pespeciales')
+                ->leftJoin('clientes', 'pespeciales.id_clie', '=', 'clientes.id_clie')
+                ->select('pespeciales.*', 'clientes.nombre as cnombre', 'clientes.apellido as capellido', 'clientes.telefono')
                 ->where('id_venta', $venta->id_venta)->first();
                 
             if($pespecial && $pespecial->id_dir) {
-                $dir_especial = \Illuminate\Support\Facades\DB::table('Direcciones')->where('id_dir', $pespecial->id_dir)->first();
+                $dir_especial = \Illuminate\Support\Facades\DB::table('direcciones')->where('id_dir', $pespecial->id_dir)->first();
             }
         }
     @endphp
@@ -266,17 +266,15 @@
         ¡GRACIAS POR SU PREFERENCIA!
     </div>
 
-    @if(!request()->boolean('preview'))
-        <script>
-            window.onload = function() {
-                window.print();
-            };
+    <script>
+        window.onload = function() {
+            window.print();
+        };
 
-            window.onafterprint = function() {
-                window.close();
-            };
-        </script>
-    @endif
+        window.onafterprint = function() {
+            window.close();
+        };
+    </script>
 
 </body>
 </html>

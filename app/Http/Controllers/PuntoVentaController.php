@@ -27,7 +27,7 @@ class PuntoVentaController extends Controller
             return false;
         }
 
-        $admins = DB::table('Empleados')->where('id_ca', 1)->where('status', 1)->get();
+        $admins = DB::table('empleados')->where('id_ca', 1)->where('status', 1)->get();
         foreach ($admins as $admin) {
             if ($admin->password && Hash::check($password, $admin->password)) {
                 return true;
@@ -49,39 +49,39 @@ class PuntoVentaController extends Controller
     public function index(Request $request)
     {
         $id_sucursal = 1; 
-        $cajaAbierta = DB::table('Caja')->where('status', 1)->where('id_suc', $id_sucursal)->first();
+        $cajaAbierta = DB::table('caja')->where('status', 1)->where('id_suc', $id_sucursal)->first();
 
-        $pizzas_raw = DB::table('Pizzas')->join('Especialidades', 'Pizzas.id_esp', '=', 'Especialidades.id_esp')->join('TamanosPizza', 'Pizzas.id_tamano', '=', 'TamanosPizza.id_tamañop')->select('Especialidades.nombre', 'TamanosPizza.tamano', 'TamanosPizza.precio', 'Pizzas.id_pizza')->get();
+        $pizzas_raw = DB::table('pizzas')->join('especialidades', 'pizzas.id_esp', '=', 'especialidades.id_esp')->join('tamanospizza', 'pizzas.id_tamano', '=', 'tamanospizza.id_tamañop')->select('especialidades.nombre', 'tamanospizza.tamano', 'tamanospizza.precio', 'pizzas.id_pizza')->get();
         $pizzas = []; foreach($pizzas_raw as $p) { if(!isset($pizzas[$p->nombre])) $pizzas[$p->nombre] = ['nombre' => $p->nombre, 'tamanos' => []]; $pizzas[$p->nombre]['tamanos'][] = ['id' => $p->id_pizza, 'tamano' => $p->tamano, 'precio' => $p->precio]; }
 
-        $mariscos_raw = DB::table('PizzasMariscos')->join('TamanosPizza', 'PizzasMariscos.id_tamañop', '=', 'TamanosPizza.id_tamañop')->select('PizzasMariscos.nombre', 'TamanosPizza.tamano', 'TamanosPizza.precio', 'PizzasMariscos.id_maris')->get();
+        $mariscos_raw = DB::table('pizzasmariscos')->join('tamanospizza', 'pizzasmariscos.id_tamañop', '=', 'tamanospizza.id_tamañop')->select('pizzasmariscos.nombre', 'tamanospizza.tamano', 'tamanospizza.precio', 'pizzasmariscos.id_maris')->get();
         $mariscos = []; foreach($mariscos_raw as $m) { $nom = str_replace('Pizza ', '', $m->nombre); if(!isset($mariscos[$nom])) $mariscos[$nom] = ['nombre' => $nom, 'tamanos' => []]; $mariscos[$nom]['tamanos'][] = ['id' => $m->id_maris, 'tamano' => $m->tamano, 'precio' => $m->precio]; }
 
-        $bebidas_raw = DB::table('Refrescos')->join('TamanosRefrescos', 'Refrescos.id_tamano', '=', 'TamanosRefrescos.id_tamano')->select('Refrescos.id_refresco as id', 'Refrescos.nombre', 'TamanosRefrescos.tamano', 'TamanosRefrescos.precio')->get();
+        $bebidas_raw = DB::table('refrescos')->join('tamanosrefrescos', 'refrescos.id_tamano', '=', 'tamanosrefrescos.id_tamano')->select('refrescos.id_refresco as id', 'refrescos.nombre', 'tamanosrefrescos.tamano', 'tamanosrefrescos.precio')->get();
         $bebidas = []; foreach($bebidas_raw as $b) { if(!isset($bebidas[$b->nombre])) $bebidas[$b->nombre] = ['nombre' => $b->nombre, 'cat' => 1, 'opciones' => []]; $bebidas[$b->nombre]['opciones'][] = ['id' => $b->id, 'tamano' => $b->tamano, 'precio' => $b->precio]; }
 
         $directos = [];
-        foreach(DB::table('Rectangular')->join('Especialidades', 'Rectangular.id_esp', '=', 'Especialidades.id_esp')->select('Rectangular.id_rec as id', 'Especialidades.nombre', 'Rectangular.precio')->get() as $r) { $directos[] = ['id' => $r->id, 'col' => 'id_rec', 'nombre' => $r->nombre, 'precio' => $r->precio, 'cat' => 11]; }
-        foreach(DB::table('Barra')->join('Especialidades', 'Barra.id_especialidad', '=', 'Especialidades.id_esp')->select('Barra.id_barr as id', 'Especialidades.nombre', 'Barra.precio')->get() as $b) { $directos[] = ['id' => $b->id, 'col' => 'id_barr', 'nombre' => $b->nombre, 'precio' => $b->precio, 'cat' => 10]; }
-        foreach(DB::table('Hamburguesas')->get() as $h) { $directos[] = ['id' => $h->id_hamb, 'col' => 'id_hamb', 'nombre' => $h->paquete, 'precio' => $h->precio, 'cat' => 6]; }
-        foreach(DB::table('Alitas')->get() as $a) { $directos[] = ['id' => $a->id_alis, 'col' => 'id_alis', 'nombre' => $a->orden, 'precio' => $a->precio, 'cat' => 5]; }
-        foreach(DB::table('Costillas')->get() as $c) { $directos[] = ['id' => $c->id_cos, 'col' => 'id_cos', 'nombre' => $c->orden, 'precio' => $c->precio, 'cat' => 7]; }
-        foreach(DB::table('Spaguetty')->get() as $s) { $directos[] = ['id' => $s->id_spag, 'col' => 'id_spag', 'nombre' => $s->orden, 'precio' => $s->precio, 'cat' => 9]; }
-        foreach(DB::table('OrdenDePapas')->get() as $p) { $directos[] = ['id' => $p->id_papa, 'col' => 'id_papa', 'nombre' => $p->orden, 'precio' => $p->precio, 'cat' => 8]; }
+        foreach(DB::table('rectangular')->join('especialidades', 'rectangular.id_esp', '=', 'especialidades.id_esp')->select('rectangular.id_rec as id', 'especialidades.nombre', 'rectangular.precio')->get() as $r) { $directos[] = ['id' => $r->id, 'col' => 'id_rec', 'nombre' => $r->nombre, 'precio' => $r->precio, 'cat' => 11]; }
+        foreach(DB::table('barra')->join('especialidades', 'barra.id_especialidad', '=', 'especialidades.id_esp')->select('barra.id_barr as id', 'especialidades.nombre', 'barra.precio')->get() as $b) { $directos[] = ['id' => $b->id, 'col' => 'id_barr', 'nombre' => $b->nombre, 'precio' => $b->precio, 'cat' => 10]; }
+        foreach(DB::table('hamburguesas')->get() as $h) { $directos[] = ['id' => $h->id_hamb, 'col' => 'id_hamb', 'nombre' => $h->paquete, 'precio' => $h->precio, 'cat' => 6]; }
+        foreach(DB::table('alitas')->get() as $a) { $directos[] = ['id' => $a->id_alis, 'col' => 'id_alis', 'nombre' => $a->orden, 'precio' => $a->precio, 'cat' => 5]; }
+        foreach(DB::table('costillas')->get() as $c) { $directos[] = ['id' => $c->id_cos, 'col' => 'id_cos', 'nombre' => $c->orden, 'precio' => $c->precio, 'cat' => 7]; }
+        foreach(DB::table('spaguetty')->get() as $s) { $directos[] = ['id' => $s->id_spag, 'col' => 'id_spag', 'nombre' => $s->orden, 'precio' => $s->precio, 'cat' => 9]; }
+        foreach(DB::table('ordendepapas')->get() as $p) { $directos[] = ['id' => $p->id_papa, 'col' => 'id_papa', 'nombre' => $p->orden, 'precio' => $p->precio, 'cat' => 8]; }
 
-        $paquetes = DB::table('Paquetes')->get();
-        $ingredientes = DB::table('Ingredientes')->get();
+        $paquetes = DB::table('paquetes')->get();
+        $ingredientes = DB::table('ingredientes')->get();
         
-        $tamanos_base = DB::table('TamanosPizza')
+        $tamanos_base = DB::table('tamanospizza')
             ->whereIn('tamano', ['Chica', 'Mediana', 'Grande', 'Familiar', 'CHICA', 'MEDIANA', 'GRANDE', 'FAMILIAR'])
             ->orWhere('tamano', 'like', '%Especial%')
             ->get();
         
-        $especialidades_lista = DB::table('Especialidades')->get();
-        $categorias_extras = DB::table('CategoriasProd')->whereNotIn('id_cat', [12, 2, 11, 10, 1])->get();
+        $especialidades_lista = DB::table('especialidades')->get();
+        $categorias_extras = DB::table('categoriasprod')->whereNotIn('id_cat', [12, 2, 11, 10, 1])->get();
         $clientes = []; $direcciones = [];
-        try { $clientes = DB::table('Clientes')->where('status', 1)->get(); $direcciones = DB::table('Direcciones')->where('status', 1)->get(); } catch (\Exception $e) {}
-        $magno_precio = DB::table('Magno')->value('precio') ?? 0;
+        try { $clientes = DB::table('clientes')->where('status', 1)->get(); $direcciones = DB::table('direcciones')->where('status', 1)->get(); } catch (\Exception $e) {}
+        $magno_precio = DB::table('magno')->value('precio') ?? 0;
 
         $venta_edit = null;
         $cart_preloaded = [];
@@ -91,17 +91,17 @@ class PuntoVentaController extends Controller
 
         if ($request->has('edit') || $request->has('id_venta')) {
             $id_busqueda = $request->edit ?? $request->id_venta;
-            $venta_edit = DB::table('Venta')->where('id_venta', $id_busqueda)->first();
+            $venta_edit = DB::table('venta')->where('id_venta', $id_busqueda)->first();
             
             if($venta_edit) {
-                $pagos_edit = DB::table('Pago')->where('id_venta', $venta_edit->id_venta)->get();
+                $pagos_edit = DB::table('pago')->where('id_venta', $venta_edit->id_venta)->get();
                 
                 if ($venta_edit->tipo_servicio == 3) {
-                    $domicilio_edit = DB::table('PDomicilio')->where('id_venta', $venta_edit->id_venta)->first();
+                    $domicilio_edit = DB::table('pdomicilio')->where('id_venta', $venta_edit->id_venta)->first();
                 }
 
                 if ($venta_edit->tipo_servicio == 4) {
-                    $pespecial_edit = DB::table('PEspeciales')->where('id_venta', $venta_edit->id_venta)->first();
+                    $pespecial_edit = DB::table('pespeciales')->where('id_venta', $venta_edit->id_venta)->first();
                     if ($pespecial_edit && $pespecial_edit->id_clie) {
                         $domicilio_edit = (object)[
                             'id_venta' => $venta_edit->id_venta,
@@ -111,7 +111,7 @@ class PuntoVentaController extends Controller
                     }
                 }
 
-                $detalles_edit = DB::table('DetalleVenta')->where('id_venta', $venta_edit->id_venta)->get();
+                $detalles_edit = DB::table('detalleventa')->where('id_venta', $venta_edit->id_venta)->get();
                 foreach($detalles_edit as $det) {
                     $ing = $det->ingredientes ? json_decode($det->ingredientes) : null;
                     $item = [
@@ -123,20 +123,20 @@ class PuntoVentaController extends Controller
                     ];
 
                     if ($det->id_pizza) {
-                        $p = DB::table('Pizzas')->join('Especialidades', 'Pizzas.id_esp', '=', 'Especialidades.id_esp')->join('TamanosPizza', 'Pizzas.id_tamano', '=', 'TamanosPizza.id_tamañop')->where('Pizzas.id_pizza', $det->id_pizza)->first();
+                        $p = DB::table('pizzas')->join('especialidades', 'pizzas.id_esp', '=', 'especialidades.id_esp')->join('tamanospizza', 'pizzas.id_tamano', '=', 'tamanospizza.id_tamañop')->where('pizzas.id_pizza', $det->id_pizza)->first();
                         $item['es_pizza'] = true; $item['tipo'] = 'pizza_normal'; $item['col'] = 'id_pizza'; $item['db_id'] = $det->id_pizza;
                         if($p) { $item['nombre_base'] = "Pizza " . $p->tamano; $item['variante'] = $p->nombre; }
                     } elseif ($det->id_maris) {
-                        $m = DB::table('PizzasMariscos')->join('TamanosPizza', 'PizzasMariscos.id_tamañop', '=', 'TamanosPizza.id_tamañop')->where('PizzasMariscos.id_maris', $det->id_maris)->first();
+                        $m = DB::table('pizzasmariscos')->join('tamanospizza', 'pizzasmariscos.id_tamañop', '=', 'tamanospizza.id_tamañop')->where('pizzasmariscos.id_maris', $det->id_maris)->first();
                         $item['es_pizza'] = true; $item['tipo'] = 'pizza_normal'; $item['col'] = 'id_maris'; $item['db_id'] = $det->id_maris;
                         if($m) { $item['nombre_base'] = "Mariscos " . $m->tamano; $item['variante'] = $m->nombre; }
-                    } elseif ($det->id_hamb) { $item['col'] = 'id_hamb'; $item['db_id'] = $det->id_hamb; $item['nombre_base'] = DB::table('Hamburguesas')->where('id_hamb', $det->id_hamb)->value('paquete'); }
-                    elseif ($det->id_cos) { $item['col'] = 'id_cos'; $item['db_id'] = $det->id_cos; $item['nombre_base'] = DB::table('Costillas')->where('id_cos', $det->id_cos)->value('orden'); }
-                    elseif ($det->id_alis) { $item['col'] = 'id_alis'; $item['db_id'] = $det->id_alis; $item['nombre_base'] = DB::table('Alitas')->where('id_alis', $det->id_alis)->value('orden'); }
-                    elseif ($det->id_spag) { $item['col'] = 'id_spag'; $item['db_id'] = $det->id_spag; $item['nombre_base'] = DB::table('Spaguetty')->where('id_spag', $det->id_spag)->value('orden'); }
-                    elseif ($det->id_papa) { $item['col'] = 'id_papa'; $item['db_id'] = $det->id_papa; $item['nombre_base'] = DB::table('OrdenDePapas')->where('id_papa', $det->id_papa)->value('orden'); }
+                    } elseif ($det->id_hamb) { $item['col'] = 'id_hamb'; $item['db_id'] = $det->id_hamb; $item['nombre_base'] = DB::table('hamburguesas')->where('id_hamb', $det->id_hamb)->value('paquete'); }
+                    elseif ($det->id_cos) { $item['col'] = 'id_cos'; $item['db_id'] = $det->id_cos; $item['nombre_base'] = DB::table('costillas')->where('id_cos', $det->id_cos)->value('orden'); }
+                    elseif ($det->id_alis) { $item['col'] = 'id_alis'; $item['db_id'] = $det->id_alis; $item['nombre_base'] = DB::table('alitas')->where('id_alis', $det->id_alis)->value('orden'); }
+                    elseif ($det->id_spag) { $item['col'] = 'id_spag'; $item['db_id'] = $det->id_spag; $item['nombre_base'] = DB::table('spaguetty')->where('id_spag', $det->id_spag)->value('orden'); }
+                    elseif ($det->id_papa) { $item['col'] = 'id_papa'; $item['db_id'] = $det->id_papa; $item['nombre_base'] = DB::table('ordendepapas')->where('id_papa', $det->id_papa)->value('orden'); }
                     elseif ($det->id_refresco) {
-                        $r = DB::table('Refrescos')->join('TamanosRefrescos', 'Refrescos.id_tamano', '=', 'TamanosRefrescos.id_tamano')->where('Refrescos.id_refresco', $det->id_refresco)->first();
+                        $r = DB::table('refrescos')->join('tamanosrefrescos', 'refrescos.id_tamano', '=', 'tamanosrefrescos.id_tamano')->where('refrescos.id_refresco', $det->id_refresco)->first();
                         $item['col'] = 'id_refresco'; $item['db_id'] = $det->id_refresco; if($r) { $item['nombre_base'] = $r->nombre . " " . $r->tamano; }
                     } elseif ($det->id_rec) {
                         $j = json_decode($det->id_rec); $item['col'] = 'id_rec'; $item['db_id'] = $j->id ?? null; $item['nombre_base'] = "Pizza Rectangular";
@@ -194,14 +194,14 @@ class PuntoVentaController extends Controller
         }
 
         $id_sucursal = 1;
-        $cajaAbierta = DB::table('Caja')->where('status', 1)->where('id_suc', $id_sucursal)->first();
+        $cajaAbierta = DB::table('caja')->where('status', 1)->where('id_suc', $id_sucursal)->first();
         if(!$cajaAbierta) throw new \Exception("No hay caja abierta.");
 
         $id_clie = $request->id_clie ?? null;
         $id_dir = $request->id_dir ?? null;
 
         if ($request->has('nuevo_cliente') && is_array($request->nuevo_cliente) && !empty($request->nuevo_cliente['nombre'])) {
-            $id_clie = DB::table('Clientes')->insertGetId([
+            $id_clie = DB::table('clientes')->insertGetId([
                 'nombre' => $request->nuevo_cliente['nombre'],
                 'apellido' => $request->nuevo_cliente['apellido'] ?? '',
                 'telefono' => $request->nuevo_cliente['telefono'] ?? '',
@@ -210,7 +210,7 @@ class PuntoVentaController extends Controller
         }
 
             if ($request->has('nueva_direccion') && is_array($request->nueva_direccion) && !empty($request->nueva_direccion['calle']) && $id_clie) {
-                $id_dir = DB::table('Direcciones')->insertGetId([
+                $id_dir = DB::table('direcciones')->insertGetId([
                     'id_clie' => $id_clie, 
                     'calle' => $request->nueva_direccion['calle'], 
                     'manzana' => $request->nueva_direccion['manzana'] ?? '',
@@ -233,15 +233,15 @@ class PuntoVentaController extends Controller
             }
 
             if ($id_venta) {
-                DB::table('Venta')->where('id_venta', $id_venta)->update([
+                DB::table('venta')->where('id_venta', $id_venta)->update([
                     'total' => $request->total, 'tipo_servicio' => $request->tipo_servicio, 'mesa' => $request->mesa, 
                     'nombreClie' => $nombreClienteMesa, 'comentarios' => $comentariosFinales, 'status' => $estado_venta
                 ]);
-                DB::table('DetalleVenta')->where('id_venta', $id_venta)->delete();
-                DB::table('Pago')->where('id_venta', $id_venta)->delete();
-                DB::table('PDomicilio')->where('id_venta', $id_venta)->delete();
+                DB::table('detalleventa')->where('id_venta', $id_venta)->delete();
+                DB::table('pago')->where('id_venta', $id_venta)->delete();
+                DB::table('pdomicilio')->where('id_venta', $id_venta)->delete();
             } else {
-                $id_venta = DB::table('Venta')->insertGetId([
+                $id_venta = DB::table('venta')->insertGetId([
                     'id_suc' => $id_sucursal, 'id_caja' => $cajaAbierta->id_caja, 'total' => $request->total, 'tipo_servicio' => $request->tipo_servicio,
                     'mesa' => $request->mesa, 'nombreClie' => $nombreClienteMesa, 'comentarios' => $comentariosFinales,
                     'status' => $estado_venta, 'fecha_hora' => Carbon::now()
@@ -303,7 +303,7 @@ class PuntoVentaController extends Controller
 
                 if(!empty($extraData)) $datosInsert['ingredientes'] = json_encode($extraData);
                 
-                DB::table('DetalleVenta')->insert($datosInsert);
+                DB::table('detalleventa')->insert($datosInsert);
             }
 
             if ($request->has('pagos')) {
@@ -311,12 +311,12 @@ class PuntoVentaController extends Controller
                     $datosPago = ['id_venta' => $id_venta, 'id_metpago' => $pago['id_metpago'], 'monto' => $pago['monto']];
                     if (isset($pago['referencia'])) $datosPago['referencia'] = $pago['referencia'];
                     if (isset($pago['entregado'])) $datosPago['referencia'] = $pago['entregado']; 
-                    DB::table('Pago')->insert($datosPago);
+                    DB::table('pago')->insert($datosPago);
                 }
             }
 
             if ($request->tipo_servicio == 3 && $id_clie && $id_dir) {
-                DB::table('PDomicilio')->insert([
+                DB::table('pdomicilio')->insert([
                     'id_venta' => $id_venta, 
                     'id_clie' => $id_clie, 
                     'id_dir' => $id_dir
@@ -327,10 +327,10 @@ class PuntoVentaController extends Controller
             $nuevaDir_resp = null;
 
             if (isset($id_clie) && $request->has('nuevo_cliente')) {
-                $nuevoClient_resp = DB::table('Clientes')->where('id_clie', $id_clie)->first();
+                $nuevoClient_resp = DB::table('clientes')->where('id_clie', $id_clie)->first();
             }
             if (isset($id_dir) && $request->has('nueva_direccion')) {
-                $nuevaDir_resp = DB::table('Direcciones')->where('id_dir', $id_dir)->first();
+                $nuevaDir_resp = DB::table('direcciones')->where('id_dir', $id_dir)->first();
             }
 
             DB::commit();
@@ -352,23 +352,7 @@ class PuntoVentaController extends Controller
         try {
             DB::beginTransaction();
             $id_venta = $request->id_venta;
-            $venta = DB::table('Venta')->where('id_venta', $id_venta)->first();
-
-            if (!$venta) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Venta no encontrada'], 404);
-            }
-
-            // Igual que en store(): si la venta ya está cobrada o cancelada,
-            // se requiere contraseña de admin para volver a tocarla.
-            if (in_array($venta->status, [1, 3]) && !$this->autorizarEdicionAdmin($request)) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Esta venta ya fue cobrada o cancelada. Se requiere contraseña de administrador.',
-                    'requiere_admin' => true
-                ], 403);
-            }
+            $venta = DB::table('venta')->where('id_venta', $id_venta)->first();
 
             $updateData = ['status' => 1];
 
@@ -396,14 +380,14 @@ class PuntoVentaController extends Controller
                 $updateData['comentarios'] = $comentarios_limpios . ($comentarios_limpios ? " | " : "") . "DESCUENTO " . $request->cortesia . "%";
             }
 
-            DB::table('Venta')->where('id_venta', $id_venta)->update($updateData); 
+            DB::table('venta')->where('id_venta', $id_venta)->update($updateData); 
 
             if ($request->has('pagos')) {
                 foreach($request->pagos as $pago) {
                     $datosPago = ['id_venta' => $id_venta, 'id_metpago' => $pago['id_metpago'], 'monto' => $pago['monto']];
                     if (isset($pago['referencia'])) $datosPago['referencia'] = $pago['referencia'];
                     if (isset($pago['entregado'])) $datosPago['referencia'] = $pago['entregado'];
-                    DB::table('Pago')->insert($datosPago);
+                    DB::table('pago')->insert($datosPago);
                 }
             }
 
@@ -431,12 +415,7 @@ class PuntoVentaController extends Controller
             }
 
             $id_venta = $request->id_venta;
-            $venta = DB::table('Venta')->where('id_venta', $id_venta)->first();
-
-            if (!$venta) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Venta no encontrada'], 404);
-            }
+            $venta = DB::table('venta')->where('id_venta', $id_venta)->first();
 
             $updateData = [];
 
@@ -458,17 +437,17 @@ class PuntoVentaController extends Controller
             }
             
             if(!empty($updateData)){
-                DB::table('Venta')->where('id_venta', $id_venta)->update($updateData);
+                DB::table('venta')->where('id_venta', $id_venta)->update($updateData);
             }
 
-            DB::table('Pago')->where('id_venta', $id_venta)->delete();
+            DB::table('pago')->where('id_venta', $id_venta)->delete();
 
             if ($request->has('pagos')) {
                 foreach($request->pagos as $pago) {
                     $datosPago = ['id_venta' => $id_venta, 'id_metpago' => $pago['id_metpago'], 'monto' => $pago['monto']];
                     if (isset($pago['referencia'])) $datosPago['referencia'] = $pago['referencia'];
                     if (isset($pago['entregado'])) $datosPago['referencia'] = $pago['entregado'];
-                    DB::table('Pago')->insert($datosPago);
+                    DB::table('pago')->insert($datosPago);
                 }
             }
 
@@ -482,10 +461,10 @@ class PuntoVentaController extends Controller
 
     public function ticket(Request $request, $id)
     {
-        $venta = DB::table('Venta')->where('id_venta', $id)->first();
+        $venta = DB::table('venta')->where('id_venta', $id)->first();
         if(!$venta) abort(404);
 
-        $venta->folio_virtual = Carbon::parse($venta->fecha_hora)->format('d-m-y') . ' ' . str_pad($venta->id_venta, 5, '0', STR_PAD_LEFT);
+        $venta->folio_virtual = Carbon::parse($venta->fecha_hora)->format('d-m-y') . ' ' . str_pad($venta->id_venta, STR_PAD_LEFT);
 
         $comentarios_limpios = [];
         if ($venta->comentarios) {
@@ -499,7 +478,7 @@ class PuntoVentaController extends Controller
         }
         $venta->comentarios = count($comentarios_limpios) > 0 ? " " . implode(" | ", $comentarios_limpios) : null;
 
-        $detalles = DB::table('DetalleVenta')->where('id_venta', $id)->orderBy('id_detalle', 'asc')->get();
+        $detalles = DB::table('detalleventa')->where('id_venta', $id)->orderBy('id_detalle', 'asc')->get();
         
         $cleanTamano = function($str) {
             $s = mb_strtolower($str);
@@ -535,7 +514,7 @@ class PuntoVentaController extends Controller
             $p_orilla = $ing->p_orilla ?? 0;
 
             if ($det->id_pizza) {
-                $p = DB::table('Pizzas')->join('Especialidades', 'Pizzas.id_esp', '=', 'Especialidades.id_esp')->join('TamanosPizza', 'Pizzas.id_tamano', '=', 'TamanosPizza.id_tamañop')->where('Pizzas.id_pizza', $det->id_pizza)->first();
+                $p = DB::table('pizzas')->join('especialidades', 'pizzas.id_esp', '=', 'especialidades.id_esp')->join('tamanospizza', 'pizzas.id_tamano', '=', 'tamanospizza.id_tamañop')->where('pizzas.id_pizza', $det->id_pizza)->first();
                 if($p) { 
                     $es_pizza = true; 
                     $size_clean = $cleanTamano($p->tamano); 
@@ -543,7 +522,7 @@ class PuntoVentaController extends Controller
                 }
             } 
             elseif ($det->id_maris) {
-                $m = DB::table('PizzasMariscos')->join('TamanosPizza', 'PizzasMariscos.id_tamañop', '=', 'TamanosPizza.id_tamañop')->where('PizzasMariscos.id_maris', $det->id_maris)->first();
+                $m = DB::table('pizzasmariscos')->join('tamanospizza', 'pizzasmariscos.id_tamañop', '=', 'tamanospizza.id_tamañop')->where('pizzasmariscos.id_maris', $det->id_maris)->first();
                 if($m) { 
                     $es_pizza = true; 
                     $size_clean = $cleanTamano($m->tamano); 
@@ -580,10 +559,10 @@ class PuntoVentaController extends Controller
                 $cat_comp = "";
                 $name_comp = "";
 
-                if($det->id_hamb) { $is_complemento = true; $cat_comp = "HAMBURGUESAS"; $name_comp = DB::table('Hamburguesas')->where('id_hamb', $det->id_hamb)->value('paquete'); }
-                elseif($det->id_cos) { $is_complemento = true; $cat_comp = "ORD. COSTILLAS"; $name_comp = DB::table('Costillas')->where('id_cos', $det->id_cos)->value('orden'); }
-                elseif($det->id_alis) { $is_complemento = true; $cat_comp = "ORD. ALITAS"; $name_comp = DB::table('Alitas')->where('id_alis', $det->id_alis)->value('orden'); }
-                elseif($det->id_spag) { $is_complemento = true; $cat_comp = "ORD. SPAGUETTY"; $name_comp = DB::table('Spaguetty')->where('id_spag', $det->id_spag)->value('orden'); }
+                if($det->id_hamb) { $is_complemento = true; $cat_comp = "HAMBURGUESAS"; $name_comp = DB::table('hamburguesas')->where('id_hamb', $det->id_hamb)->value('paquete'); }
+                elseif($det->id_cos) { $is_complemento = true; $cat_comp = "ORD. COSTILLAS"; $name_comp = DB::table('costillas')->where('id_cos', $det->id_cos)->value('orden'); }
+                elseif($det->id_alis) { $is_complemento = true; $cat_comp = "ORD. ALITAS"; $name_comp = DB::table('alitas')->where('id_alis', $det->id_alis)->value('orden'); }
+                elseif($det->id_spag) { $is_complemento = true; $cat_comp = "ORD. SPAGUETTY"; $name_comp = DB::table('spaguetty')->where('id_spag', $det->id_spag)->value('orden'); }
 
                 if ($is_complemento) {
                     if (!isset($grouped_complementos[$cat_comp])) {
@@ -610,7 +589,7 @@ class PuntoVentaController extends Controller
                     }
                 }
                 elseif ($det->id_refresco) {
-                    $r = DB::table('Refrescos')->join('TamanosRefrescos', 'Refrescos.id_tamano', '=', 'TamanosRefrescos.id_tamano')->where('Refrescos.id_refresco', $det->id_refresco)->first();
+                    $r = DB::table('refrescos')->join('tamanosrefrescos', 'refrescos.id_tamano', '=', 'tamanosrefrescos.id_tamano')->where('refrescos.id_refresco', $det->id_refresco)->first();
                     if($r) {
                         if (!isset($grouped_bebidas["BEBIDAS"])) {
                             $grouped_bebidas["BEBIDAS"] = ['total' => null, 'subs' => []];
@@ -813,14 +792,14 @@ class PuntoVentaController extends Controller
             ];
         }
 
-        $pagos = DB::table('Pago')->leftJoin('MetodosPago', 'Pago.id_metpago', '=', 'MetodosPago.id_metpago')->where('id_venta', $id)->get();
+        $pagos = DB::table('pago')->leftJoin('metodospago', 'pago.id_metpago', '=', 'metodospago.id_metpago')->where('id_venta', $id)->get();
         $domicilio = null;
         if ($venta->tipo_servicio == 3) {
-            $domicilio = DB::table('PDomicilio')
-                ->join('Clientes', 'PDomicilio.id_clie', '=', 'Clientes.id_clie')
-                ->join('Direcciones', 'PDomicilio.id_dir', '=', 'Direcciones.id_dir')
-                ->where('PDomicilio.id_venta', $id)
-                ->select('Clientes.nombre as cnombre', 'Clientes.apellido as capellido', 'Clientes.telefono', 'Direcciones.*')
+            $domicilio = DB::table('pdomicilio')
+                ->join('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
+                ->join('direcciones', 'pdomicilio.id_dir', '=', 'direcciones.id_dir')
+                ->where('pdomicilio.id_venta', $id)
+                ->select('clientes.nombre as cnombre', 'clientes.apellido as capellido', 'clientes.telefono', 'Direcciones.*')
                 ->first();
         }
 
@@ -831,16 +810,16 @@ class PuntoVentaController extends Controller
     {
         $id_sucursal = 1; 
         
-        $ventas = DB::table('Venta')
-            ->leftJoin('PDomicilio', 'Venta.id_venta', '=', 'PDomicilio.id_venta')
-            ->leftJoin('Clientes', 'PDomicilio.id_clie', '=', 'Clientes.id_clie')
-            ->where('Venta.id_suc', $id_sucursal)
-            ->orderBy('Venta.fecha_hora', 'desc')
-            ->select('Venta.*', 'Clientes.nombre as cnombre', 'Clientes.apellido as capellido')
+        $ventas = DB::table('venta')
+            ->leftJoin('pdomicilio', 'venta.id_venta', '=', 'pdomicilio.id_venta')
+            ->leftJoin('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
+            ->where('venta.id_suc', $id_sucursal)
+            ->orderBy('venta.fecha_hora', 'desc')
+            ->select('Venta.*', 'clientes.nombre as cnombre', 'clientes.apellido as capellido')
             ->get();
 
         foreach ($ventas as $v) {
-            $v->total_productos = DB::table('DetalleVenta')->where('id_venta', $v->id_venta)->sum('cantidad');
+            $v->total_productos = DB::table('detalleventa')->where('id_venta', $v->id_venta)->sum('cantidad');
             if ($v->tipo_servicio == 1) { $v->cliente_display = "Mesa " . $v->mesa . " - " . ($v->nombreClie ?? 'Sin Nombre'); } 
             elseif ($v->tipo_servicio == 2) { $v->cliente_display = "Mostrador (Para Llevar)"; } 
             else { $v->cliente_display = trim(($v->cnombre ?? '') . ' ' . ($v->capellido ?? '')); }
@@ -866,19 +845,19 @@ class PuntoVentaController extends Controller
                 ], 403);
             }
 
-            $venta = DB::table('Venta')->where('id_venta', $request->id_venta)->first();
+            $venta = DB::table('venta')->where('id_venta', $request->id_venta)->first();
             if(!$venta) {
                 return response()->json(['success' => false, 'message' => 'Venta no encontrada']);
             }
 
             $nuevoComentario = $venta->comentarios . " | CANCELADO - Motivo: " . $request->motivo;
 
-            DB::table('Venta')->where('id_venta', $request->id_venta)->update([
+            DB::table('venta')->where('id_venta', $request->id_venta)->update([
                 'status' => 3, 
                 'comentarios' => $nuevoComentario
             ]);
 
-            DB::table('Pago')->where('id_venta', $request->id_venta)->delete();
+            DB::table('pago')->where('id_venta', $request->id_venta)->delete();
 
             DB::commit();
             return response()->json(['success' => true]);

@@ -9,7 +9,7 @@ class PEspecial extends Model
 {
     use HasFactory;
 
-    protected $table = 'PEspeciales';
+    protected $table = 'pespeciales';
 
     protected $primaryKey = 'id_pespeciales';
 

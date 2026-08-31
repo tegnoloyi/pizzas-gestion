@@ -13,15 +13,15 @@ class RefrescosController extends Controller
      */
     public function index()
     {
-        $refrescos = DB::table('Refrescos')
-            ->join('TamanosRefrescos', 'Refrescos.id_tamano', '=', 'TamanosRefrescos.id_tamano')
-            ->join('CategoriasProd', 'Refrescos.id_cat', '=', 'CategoriasProd.id_cat')
+        $refrescos = DB::table('refrescos')
+            ->join('tamanosrefrescos', 'refrescos.id_tamano', '=', 'tamanosrefrescos.id_tamano')
+            ->join('categoriasprod', 'refrescos.id_cat', '=', 'categoriasprod.id_cat')
             ->select(
-                'Refrescos.id_refresco', 
-                'Refrescos.nombre', 
-                'TamanosRefrescos.tamano', 
-                'TamanosRefrescos.precio', 
-                'CategoriasProd.descripcion as categoria'
+                'refrescos.id_refresco', 
+                'refrescos.nombre', 
+                'tamanosrefrescos.tamano', 
+                'tamanosrefrescos.precio', 
+                'categoriasprod.descripcion as categoria'
             )
             ->get();
 
@@ -33,8 +33,8 @@ class RefrescosController extends Controller
      */
     public function create()
     {
-        $tamanos = DB::table('TamanosRefrescos')->get();
-        $categorias = DB::table('CategoriasProd')->get();
+        $tamanos = DB::table('tamanosrefrescos')->get();
+        $categorias = DB::table('categoriasprod')->get();
         
         return view('Refrescos.create', compact('tamanos', 'categorias'));
     }
@@ -50,7 +50,7 @@ class RefrescosController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Refrescos')->insert([
+        DB::table('refrescos')->insert([
             'nombre' => $request->nombre,
             'id_tamano' => $request->id_tamano,
             'id_cat' => $request->id_cat
@@ -64,14 +64,14 @@ class RefrescosController extends Controller
      */
     public function edit($id)
     {
-        $refresco = DB::table('Refrescos')->where('id_refresco', $id)->first();
+        $refresco = DB::table('refrescos')->where('id_refresco', $id)->first();
         
         if (!$refresco) {
             return redirect()->route('refrescos.index')->with('error', 'Registro no encontrado.');
         }
 
-        $tamanos = DB::table('TamanosRefrescos')->get();
-        $categorias = DB::table('CategoriasProd')->get();
+        $tamanos = DB::table('tamanosrefrescos')->get();
+        $categorias = DB::table('categoriasprod')->get();
 
         return view('Refrescos.edit', compact('refresco', 'tamanos', 'categorias'));
     }
@@ -87,7 +87,7 @@ class RefrescosController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Refrescos')->where('id_refresco', $id)->update([
+        DB::table('refrescos')->where('id_refresco', $id)->update([
             'nombre' => $request->nombre,
             'id_tamano' => $request->id_tamano,
             'id_cat' => $request->id_cat
@@ -101,7 +101,7 @@ class RefrescosController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Refrescos')->where('id_refresco', $id)->delete();
+        DB::table('refrescos')->where('id_refresco', $id)->delete();
         return redirect()->route('refrescos.index')->with('success', 'Refresco eliminado correctamente.');
     }
 }

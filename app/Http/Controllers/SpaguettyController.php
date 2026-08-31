@@ -13,13 +13,13 @@ class SpaguettyController extends Controller
      */
     public function index()
     {
-        $spaguettis = DB::table('Spaguetty')
-            ->join('CategoriasProd', 'Spaguetty.id_cat', '=', 'CategoriasProd.id_cat')
+        $spaguettis = DB::table('spaguetty')
+            ->join('categoriasprod', 'spaguetty.id_cat', '=', 'categoriasprod.id_cat')
             ->select(
-                'Spaguetty.id_spag', 
-                'Spaguetty.orden', 
-                'Spaguetty.precio', 
-                'CategoriasProd.descripcion as categoria'
+                'spaguetty.id_spag', 
+                'spaguetty.orden', 
+                'spaguetty.precio', 
+                'categoriasprod.descripcion as categoria'
             )
             ->get();
 
@@ -31,7 +31,7 @@ class SpaguettyController extends Controller
      */
     public function create()
     {
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
         return view('Spaguetty.create', compact('categorias'));
     }
 
@@ -46,7 +46,7 @@ class SpaguettyController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Spaguetty')->insert([
+        DB::table('spaguetty')->insert([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -60,13 +60,13 @@ class SpaguettyController extends Controller
      */
     public function edit($id)
     {
-        $spaguetty = DB::table('Spaguetty')->where('id_spag', $id)->first();
+        $spaguetty = DB::table('spaguetty')->where('id_spag', $id)->first();
         
         if (!$spaguetty) {
             return redirect()->route('spaguetty.index')->with('error', 'Registro no encontrado.');
         }
 
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
 
         return view('Spaguetty.edit', compact('spaguetty', 'categorias'));
     }
@@ -82,7 +82,7 @@ class SpaguettyController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Spaguetty')->where('id_spag', $id)->update([
+        DB::table('spaguetty')->where('id_spag', $id)->update([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -96,7 +96,7 @@ class SpaguettyController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Spaguetty')->where('id_spag', $id)->delete();
+        DB::table('spaguetty')->where('id_spag', $id)->delete();
         return redirect()->route('spaguetty.index')->with('success', 'Spaguetty eliminado correctamente.');
     }
 }

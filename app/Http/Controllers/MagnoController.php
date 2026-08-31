@@ -10,14 +10,14 @@ class MagnoController extends Controller
     public function index()
     {
         // Se cambiaron los nombres de las tablas a Mayúsculas para coincidir con la BD
-        $magnos = DB::table('Magno')
-            ->join('Especialidades', 'Magno.id_especialidad', '=', 'Especialidades.id_esp')
-            ->join('Refrescos', 'Magno.id_refresco', '=', 'Refrescos.id_refresco')
+        $magnos = DB::table('magno')
+            ->join('especialidades', 'magno.id_especialidad', '=', 'especialidades.id_esp')
+            ->join('refrescos', 'magno.id_refresco', '=', 'refrescos.id_refresco')
             ->select(
-                'Magno.id_magno', 
-                'Especialidades.nombre as especialidad', 
-                'Refrescos.nombre as refresco', 
-                'Magno.precio'
+                'magno.id_magno', 
+                'especialidades.nombre as especialidad', 
+                'refrescos.nombre as refresco', 
+                'magno.precio'
             )
             ->get();
 
@@ -26,8 +26,8 @@ class MagnoController extends Controller
 
     public function create()
     {
-        $especialidades = DB::table('Especialidades')->get();
-        $refrescos = DB::table('Refrescos')->get();
+        $especialidades = DB::table('especialidades')->get();
+        $refrescos = DB::table('refrescos')->get();
         
         return view('Magno.create', compact('especialidades', 'refrescos'));
     }
@@ -40,7 +40,7 @@ class MagnoController extends Controller
             'precio' => 'required|numeric'
         ]);
 
-        DB::table('Magno')->insert([
+        DB::table('magno')->insert([
             'id_especialidad' => $request->id_especialidad,
             'id_refresco' => $request->id_refresco,
             'precio' => $request->precio
@@ -51,9 +51,9 @@ class MagnoController extends Controller
 
     public function edit($id)
     {
-        $magno = DB::table('Magno')->where('id_magno', $id)->first();
-        $especialidades = DB::table('Especialidades')->get();
-        $refrescos = DB::table('Refrescos')->get();
+        $magno = DB::table('magno')->where('id_magno', $id)->first();
+        $especialidades = DB::table('especialidades')->get();
+        $refrescos = DB::table('refrescos')->get();
 
         return view('Magno.edit', compact('magno', 'especialidades', 'refrescos'));
     }
@@ -66,7 +66,7 @@ class MagnoController extends Controller
             'precio' => 'required|numeric'
         ]);
         
-        DB::table('Magno')->where('id_magno', $id)->update([
+        DB::table('magno')->where('id_magno', $id)->update([
             'id_especialidad' => $request->id_especialidad,
             'id_refresco' => $request->id_refresco,
             'precio' => $request->precio
@@ -77,7 +77,7 @@ class MagnoController extends Controller
 
     public function destroy($id)
     {
-        DB::table('Magno')->where('id_magno', $id)->delete();
+        DB::table('magno')->where('id_magno', $id)->delete();
         return redirect()->route('magno.index')->with('success', 'Producto Magno eliminado correctamente.');
     }
 }

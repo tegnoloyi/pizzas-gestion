@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmpleadoPermiso extends Model
 {
-    protected $table = 'empleadoPermisos';
+    protected $table = 'empleadopermisos';
     protected $primaryKey = 'id_permiso_emp';
 
     protected $fillable = [
@@ -29,6 +29,6 @@ class EmpleadoPermiso extends Model
 
     public function empleado()
     {
-        return $this->belongsTo(empleado::class, 'id_emp', 'id_emp');
+        return $this->belongsTo(Empleado::class, 'id_emp', 'id_emp');
     }
 }

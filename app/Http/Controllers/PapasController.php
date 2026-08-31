@@ -13,9 +13,9 @@ class PapasController extends Controller
      */
     public function index()
     {
-        $papas = DB::table('OrdenDePapas')
-            ->join('CategoriasProd', 'OrdenDePapas.id_cat', '=', 'CategoriasProd.id_cat')
-            ->select('OrdenDePapas.id_papa', 'OrdenDePapas.orden', 'OrdenDePapas.precio', 'CategoriasProd.descripcion as categoria')
+        $papas = DB::table('ordendepapas')
+            ->join('categoriasprod', 'ordendepapas.id_cat', '=', 'categoriasprod.id_cat')
+            ->select('ordendepapas.id_papa', 'ordendepapas.orden', 'ordendepapas.precio', 'categoriasprod.descripcion as categoria')
             ->get();
 
         return view('Papas.index', compact('papas'));
@@ -26,7 +26,7 @@ class PapasController extends Controller
      */
     public function create()
     {
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
         return view('Papas.create', compact('categorias'));
     }
 
@@ -41,7 +41,7 @@ class PapasController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('OrdenDePapas')->insert([
+        DB::table('ordendepapas')->insert([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -55,8 +55,8 @@ class PapasController extends Controller
      */
     public function edit($id)
     {
-        $papa = DB::table('OrdenDePapas')->where('id_papa', $id)->first();
-        $categorias = DB::table('CategoriasProd')->get();
+        $papa = DB::table('ordendepapas')->where('id_papa', $id)->first();
+        $categorias = DB::table('categoriasprod')->get();
 
         if (!$papa) {
             return redirect()->route('papas.index')->with('error', 'Registro no encontrado.');
@@ -76,7 +76,7 @@ class PapasController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('OrdenDePapas')->where('id_papa', $id)->update([
+        DB::table('ordendepapas')->where('id_papa', $id)->update([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -90,7 +90,7 @@ class PapasController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('OrdenDePapas')->where('id_papa', $id)->delete();
+        DB::table('ordendepapas')->where('id_papa', $id)->delete();
         return redirect()->route('papas.index')->with('success', 'Papas eliminadas correctamente.');
     }
 }

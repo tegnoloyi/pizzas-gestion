@@ -13,14 +13,14 @@ class BarraController extends Controller
      */
     public function index()
     {
-        $barras = DB::table('Barra')
-            ->join('Especialidades', 'Barra.id_especialidad', '=', 'Especialidades.id_esp')
-            ->join('CategoriasProd', 'Barra.id_cat', '=', 'CategoriasProd.id_cat')
+        $barras = DB::table('barra')
+            ->join('especialidades', 'barra.id_especialidad', '=', 'especialidades.id_esp')
+            ->join('categoriasprod', 'barra.id_cat', '=', 'categoriasprod.id_cat')
             ->select(
-                'Barra.id_barr', 
-                'Especialidades.nombre as especialidad', 
-                'Barra.precio', 
-                'CategoriasProd.descripcion as categoria'
+                'barra.id_barr', 
+                'especialidades.nombre as especialidad', 
+                'barra.precio', 
+                'categoriasprod.descripcion as categoria'
             )
             ->get();
 
@@ -32,8 +32,8 @@ class BarraController extends Controller
      */
     public function create()
     {
-        $especialidades = DB::table('Especialidades')->get();
-        $categorias = DB::table('CategoriasProd')->get();
+        $especialidades = DB::table('especialidades')->get();
+        $categorias = DB::table('categoriasprod')->get();
         
         return view('Barra.create', compact('especialidades', 'categorias'));
     }
@@ -49,7 +49,7 @@ class BarraController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Barra')->insert([
+        DB::table('barra')->insert([
             'id_especialidad' => $request->id_especialidad,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -63,14 +63,14 @@ class BarraController extends Controller
      */
     public function edit($id)
     {
-        $barra = DB::table('Barra')->where('id_barr', $id)->first();
+        $barra = DB::table('barra')->where('id_barr', $id)->first();
         
         if (!$barra) {
             return redirect()->route('barra.index')->with('error', 'Registro no encontrado.');
         }
 
-        $especialidades = DB::table('Especialidades')->get();
-        $categorias = DB::table('CategoriasProd')->get();
+        $especialidades = DB::table('especialidades')->get();
+        $categorias = DB::table('categoriasprod')->get();
 
         return view('Barra.edit', compact('barra', 'especialidades', 'categorias'));
     }
@@ -86,7 +86,7 @@ class BarraController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Barra')->where('id_barr', $id)->update([
+        DB::table('barra')->where('id_barr', $id)->update([
             'id_especialidad' => $request->id_especialidad,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -100,7 +100,7 @@ class BarraController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Barra')->where('id_barr', $id)->delete();
+        DB::table('barra')->where('id_barr', $id)->delete();
         return redirect()->route('barra.index')->with('success', 'Producto de Barra eliminado correctamente.');
     }
 }

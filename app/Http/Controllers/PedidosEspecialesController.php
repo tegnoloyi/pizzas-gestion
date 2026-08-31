@@ -12,26 +12,26 @@ class PedidosEspecialesController extends Controller
     // --- MOSTRAR LISTA DE PEDIDOS PENDIENTES ---
     public function index()
     {
-        $especiales_raw = DB::table('PEspeciales')
-            ->join('Venta', 'PEspeciales.id_venta', '=', 'Venta.id_venta')
-            ->leftJoin('Clientes', 'PEspeciales.id_clie', '=', 'Clientes.id_clie')
+        $especiales_raw = DB::table('pespeciales')
+            ->join('venta', 'pespeciales.id_venta', '=', 'venta.id_venta')
+            ->leftJoin('clientes', 'pespeciales.id_clie', '=', 'clientes.id_clie')
             ->select(
                 'PEspeciales.*',
-                'Venta.total',
-                'Venta.nombreClie as venta_nombre',
-                'Venta.comentarios',
-                'Venta.tipo_servicio',
-                'Clientes.nombre as cnombre',
-                'Clientes.apellido as capellido',
-                'Clientes.telefono'
+                'venta.total',
+                'venta.nombreClie as venta_nombre',
+                'venta.comentarios',
+                'venta.tipo_servicio',
+                'clientes.nombre as cnombre',
+                'clientes.apellido as capellido',
+                'clientes.telefono'
             )
-            ->where('PEspeciales.status', 1) 
-            ->orderBy('PEspeciales.fecha_entrega', 'asc')
+            ->where('pespeciales.status', 1) 
+            ->orderBy('pespeciales.fecha_entrega', 'asc')
             ->get();
 
         $especiales = [];
         foreach($especiales_raw as $esp) {
-            $pagado = DB::table('Pago')->where('id_venta', $esp->id_venta)->sum('monto');
+            $pagado = DB::table('pago')->where('id_venta', $esp->id_venta)->sum('monto');
             $esp->pagado = $pagado;
             $esp->restante = $esp->total - $pagado;
             
@@ -58,7 +58,7 @@ class PedidosEspecialesController extends Controller
 
             // REGISTRAR NUEVO CLIENTE/DIRECCION SI SE LLENÓ EL FORMULARIO
             if ($request->has('nuevo_cliente') && is_array($request->nuevo_cliente) && !empty($request->nuevo_cliente['nombre'])) {
-                $id_clie = DB::table('Clientes')->insertGetId([
+                $id_clie = DB::table('clientes')->insertGetId([
                     'nombre' => $request->nuevo_cliente['nombre'], 
                     'apellido' => $request->nuevo_cliente['apellido'] ?? '', 
                     'telefono' => $request->nuevo_cliente['telefono'] ?? '', 
@@ -66,7 +66,7 @@ class PedidosEspecialesController extends Controller
                 ]);
             }
             if ($request->has('nueva_direccion') && is_array($request->nueva_direccion) && !empty($request->nueva_direccion['calle']) && $id_clie) {
-                $id_dir = DB::table('Direcciones')->insertGetId([
+                $id_dir = DB::table('direcciones')->insertGetId([
                     'id_clie' => $id_clie, 'calle' => $request->nueva_direccion['calle'], 
                     'manzana' => $request->nueva_direccion['manzana'] ?? '', 'lote' => $request->nueva_direccion['lote'] ?? '', 
                     'colonia' => $request->nueva_direccion['colonia'] ?? '', 'referencia' => $request->nueva_direccion['referencia'] ?? '', 'status' => 1
@@ -81,37 +81,36 @@ class PedidosEspecialesController extends Controller
 
             if ($id_venta) {
                 // --- MODO EDICIÓN ---
-                DB::table('Venta')->where('id_venta', $id_venta)->update([
+                DB::table('venta')->where('id_venta', $id_venta)->update([
                     'total' => $request->total,
                     'nombreClie' => $request->nombre_cliente,
                     'comentarios' => $comentariosFinales
                 ]);
                 
-                DB::table('PEspeciales')->where('id_venta', $id_venta)->update([
+                DB::table('pespeciales')->where('id_venta', $id_venta)->update([
                     'id_dir' => $id_dir,
                     'id_clie' => $id_clie,
                     'fecha_entrega' => $request->fecha_entrega,
-                    // Sumamos el nuevo anticipo al registro visual de control.
-                    // Nunca concatenar $request directo dentro de DB::raw() -> inyección SQL.
-                    'anticipo' => DB::raw("anticipo + " . floatval($request->anticipo ?? 0))
+                    // Sumamos el nuevo anticipo al registro visual de control
+                    'anticipo' => DB::raw("anticipo + " . ($request->anticipo ?? 0))
                 ]);
                 
                 // Borramos los detalles viejos para insertar los nuevos del carrito
-                DB::table('DetalleVenta')->where('id_venta', $id_venta)->delete();
+                DB::table('detalleventa')->where('id_venta', $id_venta)->delete();
                 // OJO: NO BORRAMOS 'Pago' porque los anticipos ya están físicamente en el corte de caja pasado.
                 
             } else {
                 // --- MODO CREACIÓN NUEVA ---
-                $cajaAbierta = DB::table('Caja')->where('status', 1)->where('id_suc', $id_sucursal)->first();
+                $cajaAbierta = DB::table('caja')->where('status', 1)->where('id_suc', $id_sucursal)->first();
                 if(!$cajaAbierta) throw new \Exception("No hay caja abierta para registrar el anticipo.");
                 
-                $id_venta = DB::table('Venta')->insertGetId([
+                $id_venta = DB::table('venta')->insertGetId([
                     'id_suc' => $id_sucursal, 'id_caja' => $cajaAbierta->id_caja, 'total' => $request->total, 
                     'tipo_servicio' => 4, 'mesa' => null, 'nombreClie' => $request->nombre_cliente, 
                     'comentarios' => $comentariosFinales, 'status' => 5, 'fecha_hora' => Carbon::now()
                 ]);
 
-                DB::table('PEspeciales')->insert([
+                DB::table('pespeciales')->insert([
                     'id_venta' => $id_venta, 'id_dir' => $id_dir, 'id_clie' => $id_clie,
                     'anticipo' => $request->anticipo, 'fecha_creacion' => Carbon::now(),
                     'fecha_entrega' => $request->fecha_entrega, 'status' => 1
@@ -143,14 +142,14 @@ class PedidosEspecialesController extends Controller
                 elseif ($col) { $datosInsert[$col] = $item['db_id']; }
 
                 if(!empty($extraData)) $datosInsert['ingredientes'] = json_encode($extraData);
-                DB::table('DetalleVenta')->insert($datosInsert);
+                DB::table('detalleventa')->insert($datosInsert);
             }
 
             // INSERTAR NUEVOS PAGOS (Abonos) (Aplica para Nuevo y Edición si dejan más dinero)
             if ($request->has('pagos_anticipo') && is_array($request->pagos_anticipo)) {
                 foreach($request->pagos_anticipo as $pago) {
                     if ($pago['monto'] > 0) {
-                        DB::table('Pago')->insert([
+                        DB::table('pago')->insert([
                             'id_venta' => $id_venta,
                             'monto' => $pago['monto'],
                             'id_metpago' => $pago['id_metpago'],
@@ -174,27 +173,14 @@ class PedidosEspecialesController extends Controller
     {
         try {
             DB::beginTransaction();
-
-            // Verificamos que el pedido especial enviado en el body realmente
-            // pertenezca a la venta $id de la URL, para no cobrar/entregar el pedido equivocado.
-            $pespecial = DB::table('PEspeciales')
-                ->where('id_pespeciales', $request->id_pespeciales)
-                ->where('id_venta', $id)
-                ->first();
-
-            if (!$pespecial) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'El pedido especial no corresponde a esta venta.'], 422);
-            }
-
             if ($request->monto_cobrado > 0) {
-                DB::table('Pago')->insert([
+                DB::table('pago')->insert([
                     'id_venta' => $id, 'monto' => $request->monto_cobrado,
                     'id_metpago' => $request->id_metpago ?? 2, 'referencia' => $request->referencia ?? 'LIQUIDACION'
                 ]);
             }
-            DB::table('Venta')->where('id_venta', $id)->update(['status' => 1]);
-            DB::table('PEspeciales')->where('id_pespeciales', $request->id_pespeciales)->update(['status' => 2]);
+            DB::table('venta')->where('id_venta', $id)->update(['status' => 1]);
+            DB::table('pespeciales')->where('id_pespeciales', $request->id_pespeciales)->update(['status' => 2]);
             DB::commit();
             return response()->json(['success' => true, 'id_venta' => $id]);
         } catch (\Exception $e) {
@@ -211,7 +197,7 @@ class PedidosEspecialesController extends Controller
             if ($request->has('pagos') && is_array($request->pagos)) {
                 foreach($request->pagos as $pago) {
                     if ($pago['monto'] > 0) {
-                        DB::table('Pago')->insert([
+                        DB::table('pago')->insert([
                             'id_venta' => $id, 'monto' => $pago['monto'],
                             'id_metpago' => $pago['id_metpago'], 'referencia' => $pago['referencia'] ?? 'ABONO PEDIDO ESPECIAL'
                         ]);

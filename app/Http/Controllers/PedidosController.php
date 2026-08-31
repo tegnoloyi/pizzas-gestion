@@ -13,7 +13,7 @@ class PedidosController extends Controller
         $id_sucursal = 1; 
         
         // 1. Buscar la caja que esté abierta actualmente
-        $cajaAbierta = DB::table('Caja')
+        $cajaAbierta = DB::table('caja')
             ->where('status', 1)
             ->where('id_suc', $id_sucursal)
             ->first();
@@ -24,25 +24,25 @@ class PedidosController extends Controller
         }
 
         // 3. Traemos TODOS los pedidos (Mesa, Mostrador, Domicilio) que pertenezcan ÚNICAMENTE a la caja abierta
-        $pedidosRaw = DB::table('Venta')
-            ->leftJoin('PDomicilio', 'Venta.id_venta', '=', 'PDomicilio.id_venta')
-            ->leftJoin('Clientes', 'PDomicilio.id_clie', '=', 'Clientes.id_clie')
-            ->leftJoin('Direcciones', 'PDomicilio.id_dir', '=', 'Direcciones.id_dir')
-            ->where('Venta.id_suc', $id_sucursal)
-            ->where('Venta.id_caja', $cajaAbierta->id_caja) 
-            ->where('Venta.status', '!=', 3) 
+        $pedidosRaw = DB::table('venta')
+            ->leftJoin('pdomicilio', 'venta.id_venta', '=', 'pdomicilio.id_venta')
+            ->leftJoin('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
+            ->leftJoin('direcciones', 'pdomicilio.id_dir', '=', 'direcciones.id_dir')
+            ->where('venta.id_suc', $id_sucursal)
+            ->where('venta.id_caja', $cajaAbierta->id_caja) 
+            ->where('venta.status', '!=', 3) 
             ->select(
                 'Venta.*', 
-                'Clientes.nombre as cnombre', 
-                'Clientes.apellido as capellido', 
-                'Clientes.telefono', 
-                'Direcciones.calle', 
-                'Direcciones.manzana', 
-                'Direcciones.lote', 
-                'Direcciones.colonia', 
-                'Direcciones.referencia'
+                'clientes.nombre as cnombre', 
+                'clientes.apellido as capellido', 
+                'clientes.telefono', 
+                'direcciones.calle', 
+                'direcciones.manzana', 
+                'direcciones.lote', 
+                'direcciones.colonia', 
+                'direcciones.referencia'
             )
-            ->orderBy('Venta.fecha_hora', 'asc') 
+            ->orderBy('venta.fecha_hora', 'asc') 
             ->get();
 
         $pedidos = [];
@@ -58,7 +58,7 @@ class PedidosController extends Controller
 
     public function cambiarStatus(Request $request, $id)
     {
-        $venta = DB::table('Venta')->where('id_venta', $id)->first();
+        $venta = DB::table('venta')->where('id_venta', $id)->first();
         if(!$venta) return back()->with('error', 'Pedido no encontrado');
 
         $nuevoComentario = $venta->comentarios;
@@ -69,7 +69,7 @@ class PedidosController extends Controller
             $repartidor = $request->repartidor ?? 'No asignado';
             $nuevoComentario .= " | EN CAMINO ($hora) - Repartidor: $repartidor";
             
-            DB::table('Venta')->where('id_venta', $id)->update([
+            DB::table('venta')->where('id_venta', $id)->update([
                 'comentarios' => $nuevoComentario
             ]);
             return back()->with('success', "Pedido enviado en ruta con: $repartidor");
@@ -79,7 +79,7 @@ class PedidosController extends Controller
         if ($request->accion === 'entregado') {
             $nuevoComentario .= " | ENTREGADO ($hora)";
             
-            DB::table('Venta')->where('id_venta', $id)->update([
+            DB::table('venta')->where('id_venta', $id)->update([
                 'comentarios' => $nuevoComentario
             ]);
             return back()->with('success', 'Pedido marcado como completado y retirado del monitor.');

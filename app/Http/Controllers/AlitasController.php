@@ -13,9 +13,9 @@ class AlitasController extends Controller
      */
     public function index()
     {
-        $alitas = DB::table('Alitas')
-            ->join('CategoriasProd', 'Alitas.id_cat', '=', 'CategoriasProd.id_cat')
-            ->select('Alitas.id_alis', 'Alitas.orden', 'Alitas.precio', 'CategoriasProd.descripcion as categoria')
+        $alitas = DB::table('alitas')
+            ->join('categoriasprod', 'alitas.id_cat', '=', 'categoriasprod.id_cat')
+            ->select('alitas.id_alis', 'alitas.orden', 'alitas.precio', 'categoriasprod.descripcion as categoria')
             ->get();
 
         return view('Alitas.index', compact('alitas'));
@@ -26,7 +26,7 @@ class AlitasController extends Controller
      */
     public function create()
     {
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
         return view('Alitas.create', compact('categorias'));
     }
 
@@ -41,7 +41,7 @@ class AlitasController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Alitas')->insert([
+        DB::table('alitas')->insert([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -55,8 +55,8 @@ class AlitasController extends Controller
      */
     public function edit($id)
     {
-        $alita = DB::table('Alitas')->where('id_alis', $id)->first();
-        $categorias = DB::table('CategoriasProd')->get();
+        $alita = DB::table('alitas')->where('id_alis', $id)->first();
+        $categorias = DB::table('categoriasprod')->get();
 
         if (!$alita) {
             return redirect()->route('alitas.index')->with('error', 'Registro no encontrado.');
@@ -76,7 +76,7 @@ class AlitasController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Alitas')->where('id_alis', $id)->update([
+        DB::table('alitas')->where('id_alis', $id)->update([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -90,7 +90,7 @@ class AlitasController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Alitas')->where('id_alis', $id)->delete();
+        DB::table('alitas')->where('id_alis', $id)->delete();
         return redirect()->route('alitas.index')->with('success', 'Alitas eliminadas correctamente.');
     }
 }

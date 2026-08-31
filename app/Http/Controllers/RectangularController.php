@@ -13,14 +13,14 @@ class RectangularController extends Controller
      */
     public function index()
     {
-        $rectangulares = DB::table('Rectangular')
-            ->join('Especialidades', 'Rectangular.id_esp', '=', 'Especialidades.id_esp')
-            ->join('CategoriasProd', 'Rectangular.id_cat', '=', 'CategoriasProd.id_cat')
+        $rectangulares = DB::table('rectangular')
+            ->join('especialidades', 'rectangular.id_esp', '=', 'especialidades.id_esp')
+            ->join('categoriasprod', 'rectangular.id_cat', '=', 'categoriasprod.id_cat')
             ->select(
-                'Rectangular.id_rec', 
-                'Especialidades.nombre as especialidad', 
-                'Rectangular.precio', 
-                'CategoriasProd.descripcion as categoria'
+                'rectangular.id_rec', 
+                'especialidades.nombre as especialidad', 
+                'rectangular.precio', 
+                'categoriasprod.descripcion as categoria'
             )
             ->get();
 
@@ -32,8 +32,8 @@ class RectangularController extends Controller
      */
     public function create()
     {
-        $especialidades = DB::table('Especialidades')->get();
-        $categorias = DB::table('CategoriasProd')->get();
+        $especialidades = DB::table('especialidades')->get();
+        $categorias = DB::table('categoriasprod')->get();
         
         return view('Rectangular.create', compact('especialidades', 'categorias'));
     }
@@ -49,7 +49,7 @@ class RectangularController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Rectangular')->insert([
+        DB::table('rectangular')->insert([
             'id_esp' => $request->id_esp,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -63,14 +63,14 @@ class RectangularController extends Controller
      */
     public function edit($id)
     {
-        $rectangular = DB::table('Rectangular')->where('id_rec', $id)->first();
+        $rectangular = DB::table('rectangular')->where('id_rec', $id)->first();
         
         if (!$rectangular) {
             return redirect()->route('rectangular.index')->with('error', 'Registro no encontrado.');
         }
 
-        $especialidades = DB::table('Especialidades')->get();
-        $categorias = DB::table('CategoriasProd')->get();
+        $especialidades = DB::table('especialidades')->get();
+        $categorias = DB::table('categoriasprod')->get();
 
         return view('Rectangular.edit', compact('rectangular', 'especialidades', 'categorias'));
     }
@@ -86,7 +86,7 @@ class RectangularController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Rectangular')->where('id_rec', $id)->update([
+        DB::table('rectangular')->where('id_rec', $id)->update([
             'id_esp' => $request->id_esp,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -100,7 +100,7 @@ class RectangularController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Rectangular')->where('id_rec', $id)->delete();
+        DB::table('rectangular')->where('id_rec', $id)->delete();
         return redirect()->route('rectangular.index')->with('success', 'Pizza Rectangular eliminada correctamente.');
     }
 }

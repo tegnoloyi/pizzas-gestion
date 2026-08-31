@@ -10,7 +10,7 @@ class SucursalesController extends Controller
     public function index()
     {
         // Consultamos la tabla singular 'Sucursal' (Ya confirmamos que así se llama)
-        $sucursales = DB::table('Sucursal')->get();
+        $sucursales = DB::table('sucursal')->get();
         
         // CORRECCIÓN: La carpeta física en tu proyecto es 'Sucursales' con S mayúscula
         return view('Sucursales.index', compact('sucursales'));
@@ -29,7 +29,7 @@ class SucursalesController extends Controller
             'telefono' => 'required|string|max:20'
         ]);
 
-        DB::table('Sucursal')->insert([
+        DB::table('sucursal')->insert([
             'nombre' => $request->nombre,
             'direccion' => $request->direccion,
             'telefono' => $request->telefono
@@ -40,7 +40,7 @@ class SucursalesController extends Controller
 
     public function edit($id)
     {
-        $sucursal = DB::table('Sucursal')->where('id_suc', $id)->first();
+        $sucursal = DB::table('sucursal')->where('id_suc', $id)->first();
         if (!$sucursal) abort(404);
 
         return view('Sucursales.edit', compact('sucursal'));
@@ -54,7 +54,7 @@ class SucursalesController extends Controller
             'telefono' => 'required|string|max:20'
         ]);
         
-        DB::table('Sucursal')->where('id_suc', $id)->update([
+        DB::table('sucursal')->where('id_suc', $id)->update([
             'nombre' => $request->nombre,
             'direccion' => $request->direccion,
             'telefono' => $request->telefono
@@ -65,7 +65,7 @@ class SucursalesController extends Controller
 
     public function destroy($id)
     {
-        DB::table('Sucursal')->where('id_suc', $id)->delete();
+        DB::table('sucursal')->where('id_suc', $id)->delete();
         return redirect()->route('sucursales.index')->with('success', 'Sucursal eliminada correctamente.');
     }
 }

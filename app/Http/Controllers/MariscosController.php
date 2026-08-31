@@ -13,15 +13,15 @@ class MariscosController extends Controller
      */
     public function index()
     {
-        $mariscos = DB::table('PizzasMariscos')
-            ->join('CategoriasProd', 'PizzasMariscos.id_cat', '=', 'CategoriasProd.id_cat')
-            ->join('TamanosPizza', 'PizzasMariscos.id_tamañop', '=', 'TamanosPizza.id_tamañop')
+        $mariscos = DB::table('pizzasmariscos')
+            ->join('categoriasprod', 'pizzasmariscos.id_cat', '=', 'categoriasprod.id_cat')
+            ->join('tamanospizza', 'pizzasmariscos.id_tamañop', '=', 'tamanospizza.id_tamañop')
             ->select(
-                'PizzasMariscos.id_maris', 
-                'PizzasMariscos.nombre', 
-                'PizzasMariscos.descripcion', 
-                'TamanosPizza.tamano', 
-                'CategoriasProd.descripcion as categoria'
+                'pizzasmariscos.id_maris', 
+                'pizzasmariscos.nombre', 
+                'pizzasmariscos.descripcion', 
+                'tamanospizza.tamano', 
+                'categoriasprod.descripcion as categoria'
             )
             ->get();
 
@@ -33,8 +33,8 @@ class MariscosController extends Controller
      */
     public function create()
     {
-        $categorias = DB::table('CategoriasProd')->get();
-        $tamanos = DB::table('TamanosPizza')->get();
+        $categorias = DB::table('categoriasprod')->get();
+        $tamanos = DB::table('tamanospizza')->get();
         
         return view('Mariscos.create', compact('categorias', 'tamanos'));
     }
@@ -51,7 +51,7 @@ class MariscosController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('PizzasMariscos')->insert([
+        DB::table('pizzasmariscos')->insert([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'id_tamañop' => $request->id_tamañop,
@@ -66,14 +66,14 @@ class MariscosController extends Controller
      */
     public function edit($id)
     {
-        $marisco = DB::table('PizzasMariscos')->where('id_maris', $id)->first();
+        $marisco = DB::table('pizzasmariscos')->where('id_maris', $id)->first();
         
         if (!$marisco) {
             return redirect()->route('mariscos.index')->with('error', 'Registro no encontrado.');
         }
 
-        $categorias = DB::table('CategoriasProd')->get();
-        $tamanos = DB::table('TamanosPizza')->get();
+        $categorias = DB::table('categoriasprod')->get();
+        $tamanos = DB::table('tamanospizza')->get();
 
         return view('Mariscos.edit', compact('marisco', 'categorias', 'tamanos'));
     }
@@ -90,7 +90,7 @@ class MariscosController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('PizzasMariscos')->where('id_maris', $id)->update([
+        DB::table('pizzasmariscos')->where('id_maris', $id)->update([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'id_tamañop' => $request->id_tamañop,
@@ -105,7 +105,7 @@ class MariscosController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('PizzasMariscos')->where('id_maris', $id)->delete();
+        DB::table('pizzasmariscos')->where('id_maris', $id)->delete();
         return redirect()->route('mariscos.index')->with('success', 'Pizza de Mariscos eliminada correctamente.');
     }
 }

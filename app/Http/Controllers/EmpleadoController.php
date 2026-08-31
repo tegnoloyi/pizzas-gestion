@@ -43,8 +43,7 @@ class EmpleadoController extends Controller
             $empleado->direccion = $request->direccion ?? ''; // Existe en tu SQL
             $empleado->nickName  = $request->nickName;
             $empleado->telefono  = $request->telefono;
-            // Blindaje: solo un Admin puede asignar el cargo (id_ca=1 = Admin).
-            $empleado->id_ca     = auth()->user()->id_ca == 1 ? $request->id_ca : 2;
+            $empleado->id_ca     = $request->id_ca; 
             $empleado->id_suc    = $request->id_suc;
             $empleado->status    = 1; 
             $empleado->password  = Hash::make($request->password);
@@ -87,10 +86,7 @@ class EmpleadoController extends Controller
             $empleado->direccion = $request->direccion ?? '';
             $empleado->nickName  = $request->nickName;
             $empleado->telefono  = $request->telefono;
-            // Blindaje: solo un Admin puede reasignar el cargo de otro empleado.
-            if (auth()->user()->id_ca == 1) {
-                $empleado->id_ca = $request->id_ca;
-            }
+            $empleado->id_ca     = $request->id_ca; 
             $empleado->id_suc    = $request->id_suc;
 
             if ($request->filled('password')) {

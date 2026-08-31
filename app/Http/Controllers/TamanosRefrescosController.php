@@ -13,7 +13,7 @@ class TamanosRefrescosController extends Controller
      */
     public function index()
     {
-        $tamanos = DB::table('TamanosRefrescos')->orderBy('id_tamano')->get();
+        $tamanos = DB::table('tamanosrefrescos')->orderBy('id_tamano')->get();
         return view('TamanosRefrescos.index', compact('tamanos'));
     }
 
@@ -35,7 +35,7 @@ class TamanosRefrescosController extends Controller
             'precio' => 'required|numeric|min:0',
         ]);
 
-        DB::table('TamanosRefrescos')->insert([
+        DB::table('tamanosrefrescos')->insert([
             'tamano' => $request->tamano,
             'precio' => $request->precio,
         ]);
@@ -48,7 +48,7 @@ class TamanosRefrescosController extends Controller
      */
     public function edit($id)
     {
-        $tamano = DB::table('TamanosRefrescos')->where('id_tamano', $id)->first();
+        $tamano = DB::table('tamanosrefrescos')->where('id_tamano', $id)->first();
 
         if (!$tamano) {
             return redirect()->route('tamanos-refrescos.index')->with('error', 'Tamaño no encontrado.');
@@ -67,7 +67,7 @@ class TamanosRefrescosController extends Controller
             'precio' => 'required|numeric|min:0',
         ]);
 
-        DB::table('TamanosRefrescos')->where('id_tamano', $id)->update([
+        DB::table('tamanosrefrescos')->where('id_tamano', $id)->update([
             'tamano' => $request->tamano,
             'precio' => $request->precio,
         ]);
@@ -80,7 +80,7 @@ class TamanosRefrescosController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('TamanosRefrescos')->where('id_tamano', $id)->delete();
+        DB::table('tamanosrefrescos')->where('id_tamano', $id)->delete();
         return redirect()->route('tamanos-refrescos.index')->with('success', 'Tamaño de refresco eliminado correctamente.');
     }
 }

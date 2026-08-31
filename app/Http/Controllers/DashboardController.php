@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $id_sucursal = 1; 
 
         // 1. BUSCAMOS LA CAJA ABIERTA
-        $cajaAbierta = DB::table('Caja')
+        $cajaAbierta = DB::table('caja')
             ->where('status', 1)
             ->where('id_suc', $id_sucursal)
             ->first();
@@ -44,7 +44,7 @@ class DashboardController extends Controller
         $id_caja = $cajaAbierta->id_caja;
 
         // A. Base de Ventas de la CAJA (Pagadas)
-        $queryVentas = DB::table('Venta')
+        $queryVentas = DB::table('venta')
             ->where('id_caja', $id_caja)
             ->where('status', 1);
 
@@ -52,12 +52,12 @@ class DashboardController extends Controller
         $numVentas = (int)($queryVentas->count());
         
         // B. Desglose por Métodos: Leemos de la tabla 'Pago' unidos por 'id_caja'
-        $pagos = DB::table('Pago')
-            ->join('Venta', 'Pago.id_venta', '=', 'Venta.id_venta')
-            ->where('Venta.id_caja', $id_caja)
-            ->where('Venta.status', 1) // Solo ventas concretadas
-            ->select('Pago.id_metpago', DB::raw('SUM(Pago.monto) as total_monto'))
-            ->groupBy('Pago.id_metpago')
+        $pagos = DB::table('pago')
+            ->join('venta', 'pago.id_venta', '=', 'venta.id_venta')
+            ->where('venta.id_caja', $id_caja)
+            ->where('venta.status', 1) // Solo ventas concretadas
+            ->select('pago.id_metpago', DB::raw('SUM(pago.monto) as total_monto'))
+            ->groupBy('pago.id_metpago')
             ->get();
 
         $efectivoVentas = 0;
@@ -72,12 +72,12 @@ class DashboardController extends Controller
 
         // C. Gastos de la CAJA
         try {
-            $gastosHoy = (float)(DB::table('Gastos')
+            $gastosHoy = (float)(DB::table('gastos')
                 ->where('id_caja', $id_caja) 
                 ->sum('precio') ?? 0);
         } catch (\Exception $e) {
             // Fallback por si la tabla gastos aún no tiene la columna id_caja
-            $gastosHoy = (float)(DB::table('Gastos')->whereDate('fecha', Carbon::today())->sum('precio') ?? 0);
+            $gastosHoy = (float)(DB::table('gastos')->whereDate('fecha', Carbon::today())->sum('precio') ?? 0);
         }
 
         // D. Dinero Real Generado (Ventas en efectivo - Gastos)

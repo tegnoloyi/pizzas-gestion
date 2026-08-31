@@ -13,7 +13,7 @@ class CategoriasController extends Controller
      */
     public function index()
     {
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
         return view('Categorias.index', compact('categorias'));
     }
 
@@ -34,7 +34,7 @@ class CategoriasController extends Controller
             'descripcion' => 'required|string|max:255'
         ]);
 
-        DB::table('CategoriasProd')->insert([
+        DB::table('categoriasprod')->insert([
             'descripcion' => $request->descripcion
         ]);
 
@@ -46,7 +46,7 @@ class CategoriasController extends Controller
      */
     public function edit($id)
     {
-        $categoria = DB::table('CategoriasProd')->where('id_cat', $id)->first();
+        $categoria = DB::table('categoriasprod')->where('id_cat', $id)->first();
         
         if (!$categoria) {
             return redirect()->route('categorias.index')->with('error', 'Categoría no encontrada.');
@@ -64,7 +64,7 @@ class CategoriasController extends Controller
             'descripcion' => 'required|string|max:255'
         ]);
         
-        DB::table('CategoriasProd')->where('id_cat', $id)->update([
+        DB::table('categoriasprod')->where('id_cat', $id)->update([
             'descripcion' => $request->descripcion
         ]);
         
@@ -76,7 +76,7 @@ class CategoriasController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('CategoriasProd')->where('id_cat', $id)->delete();
+        DB::table('categoriasprod')->where('id_cat', $id)->delete();
         return redirect()->route('categorias.index')->with('success', 'Categoría eliminada correctamente.');
     }
 }

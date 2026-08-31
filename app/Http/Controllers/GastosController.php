@@ -13,7 +13,7 @@ class GastosController extends Controller
     {
         $id_suc = 1;
 
-        $cajaAbierta = DB::table('Caja')
+        $cajaAbierta = DB::table('caja')
             ->where('status', 1)
             ->where('id_suc', $id_suc)
             ->first();
@@ -21,11 +21,11 @@ class GastosController extends Controller
         $gastos = collect();
 
         if ($cajaAbierta) {
-            $gastos = DB::table('Gastos')
-                ->join('Empleados', 'Gastos.id_emp', '=', 'Empleados.id_emp')
-                ->where('Gastos.id_caja', $cajaAbierta->id_caja)
+            $gastos = DB::table('gastos')
+                ->join('empleados', 'gastos.id_emp', '=', 'empleados.id_emp')
+                ->where('gastos.id_caja', $cajaAbierta->id_caja)
                 ->select('Gastos.*', 'Empleados.nickName as responsable')
-                ->orderBy('Gastos.fecha', 'desc')
+                ->orderBy('gastos.fecha', 'desc')
                 ->get();
         }
 
@@ -40,7 +40,7 @@ class GastosController extends Controller
         ]);
 
         $id_suc = 1;
-        $cajaAbierta = DB::table('Caja')
+        $cajaAbierta = DB::table('caja')
             ->where('status', 1)
             ->where('id_suc', $id_suc)
             ->first();
@@ -49,7 +49,7 @@ class GastosController extends Controller
             return back()->with('error', 'Debes abrir la caja en Flujo de Caja antes de registrar gastos.');
         }
 
-        DB::table('Gastos')->insert([
+        DB::table('gastos')->insert([
             'id_suc'      => $id_suc,
             'descripcion' => $request->descripcion,
             'precio'      => $request->precio,
@@ -64,21 +64,7 @@ class GastosController extends Controller
 
     public function destroy($id)
     {
-        $id_suc = 1;
-        $cajaAbierta = DB::table('Caja')->where('status', 1)->where('id_suc', $id_suc)->first();
-
-        $gasto = DB::table('Gastos')->where('id_gastos', $id)->first();
-        if (!$gasto) {
-            return back()->with('error', 'Gasto no encontrado.');
-        }
-
-        // Solo se puede borrar un gasto si pertenece a la caja actualmente abierta.
-        // Evita alterar retroactivamente un corte ya cerrado.
-        if (!$cajaAbierta || $gasto->id_caja != $cajaAbierta->id_caja) {
-            return back()->with('error', 'No se puede eliminar un gasto de una caja ya cerrada.');
-        }
-
-        DB::table('Gastos')->where('id_gastos', $id)->delete();
+        DB::table('gastos')->where('id_gastos', $id)->delete();
         return back()->with('success', 'Gasto eliminado.');
     }
 }

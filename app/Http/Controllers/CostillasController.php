@@ -13,9 +13,9 @@ class CostillasController extends Controller
      */
     public function index()
     {
-        $costillas = DB::table('Costillas')
-            ->join('CategoriasProd', 'Costillas.id_cat', '=', 'CategoriasProd.id_cat')
-            ->select('Costillas.id_cos', 'Costillas.orden', 'Costillas.precio', 'CategoriasProd.descripcion as categoria')
+        $costillas = DB::table('costillas')
+            ->join('categoriasprod', 'costillas.id_cat', '=', 'categoriasprod.id_cat')
+            ->select('costillas.id_cos', 'costillas.orden', 'costillas.precio', 'categoriasprod.descripcion as categoria')
             ->get();
 
         return view('Costillas.index', compact('costillas'));
@@ -26,7 +26,7 @@ class CostillasController extends Controller
      */
     public function create()
     {
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
         return view('Costillas.create', compact('categorias'));
     }
 
@@ -41,7 +41,7 @@ class CostillasController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Costillas')->insert([
+        DB::table('costillas')->insert([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -55,8 +55,8 @@ class CostillasController extends Controller
      */
     public function edit($id)
     {
-        $costilla = DB::table('Costillas')->where('id_cos', $id)->first();
-        $categorias = DB::table('CategoriasProd')->get();
+        $costilla = DB::table('costillas')->where('id_cos', $id)->first();
+        $categorias = DB::table('categoriasprod')->get();
 
         if (!$costilla) {
             return redirect()->route('costillas.index')->with('error', 'Registro no encontrado.');
@@ -76,7 +76,7 @@ class CostillasController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Costillas')->where('id_cos', $id)->update([
+        DB::table('costillas')->where('id_cos', $id)->update([
             'orden' => $request->orden,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -90,7 +90,7 @@ class CostillasController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Costillas')->where('id_cos', $id)->delete();
+        DB::table('costillas')->where('id_cos', $id)->delete();
         return redirect()->route('costillas.index')->with('success', 'Costillas eliminadas correctamente.');
     }
 }

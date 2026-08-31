@@ -10,9 +10,9 @@ class CargosController extends Controller
     public function index()
     {
         // Se corrige a 'Cargos' y 'Permisos' para coincidir con la DB
-        $cargos = DB::table('Cargos')
-            ->leftJoin('Permisos', 'Cargos.id_ca', '=', 'Permisos.id_cargo')
-            ->select('Cargos.id_ca', 'Cargos.nombre', 'Permisos.*')
+        $cargos = DB::table('cargos')
+            ->leftJoin('permisos', 'cargos.id_ca', '=', 'permisos.id_cargo')
+            ->select('cargos.id_ca', 'cargos.nombre', 'Permisos.*')
             ->get();
             
         return view('Cargos.index', compact('cargos'));
@@ -30,12 +30,12 @@ class CargosController extends Controller
         ]);
 
         // Se utiliza la tabla 'Cargos'
-        $id_ca = DB::table('Cargos')->insertGetId([
+        $id_ca = DB::table('cargos')->insertGetId([
             'nombre' => $request->nombre
         ]);
 
         // Se utiliza la tabla 'Permisos'
-        DB::table('Permisos')->insert([
+        DB::table('permisos')->insert([
             'id_cargo' => $id_ca,
             'crear_producto' => $request->has('crear_producto') ? 1 : 0,
             'modificar_producto' => $request->has('modificar_producto') ? 1 : 0,
@@ -63,10 +63,10 @@ class CargosController extends Controller
 
     public function edit($id)
     {
-        $cargo = DB::table('Cargos')
-            ->leftJoin('Permisos', 'Cargos.id_ca', '=', 'Permisos.id_cargo')
-            ->select('Cargos.id_ca', 'Cargos.nombre', 'Permisos.*')
-            ->where('Cargos.id_ca', $id)
+        $cargo = DB::table('cargos')
+            ->leftJoin('permisos', 'cargos.id_ca', '=', 'permisos.id_cargo')
+            ->select('cargos.id_ca', 'cargos.nombre', 'Permisos.*')
+            ->where('cargos.id_ca', $id)
             ->first();
             
         return view('Cargos.edit', compact('cargo'));
@@ -78,7 +78,7 @@ class CargosController extends Controller
             'nombre' => 'required|string|max:255',
         ]);
         
-        DB::table('Cargos')->where('id_ca', $id)->update([
+        DB::table('cargos')->where('id_ca', $id)->update([
             'nombre' => $request->nombre
         ]);
         
@@ -104,12 +104,12 @@ class CargosController extends Controller
             'ver_recurso' => $request->has('ver_recurso') ? 1 : 0,
         ];
 
-        $existePermiso = DB::table('Permisos')->where('id_cargo', $id)->exists();
+        $existePermiso = DB::table('permisos')->where('id_cargo', $id)->exists();
         if ($existePermiso) {
-            DB::table('Permisos')->where('id_cargo', $id)->update($permisosData);
+            DB::table('permisos')->where('id_cargo', $id)->update($permisosData);
         } else {
             $permisosData['id_cargo'] = $id;
-            DB::table('Permisos')->insert($permisosData);
+            DB::table('permisos')->insert($permisosData);
         }
         
         return redirect()->route('cargos.index')->with('success', 'Cargo actualizado correctamente.');
@@ -117,8 +117,8 @@ class CargosController extends Controller
 
     public function destroy($id)
     {
-        DB::table('Permisos')->where('id_cargo', $id)->delete();
-        DB::table('Cargos')->where('id_ca', $id)->delete();
+        DB::table('permisos')->where('id_cargo', $id)->delete();
+        DB::table('cargos')->where('id_ca', $id)->delete();
         
         return redirect()->route('cargos.index')->with('success', 'Cargo eliminado correctamente.');
     }

@@ -13,7 +13,7 @@ class IngredientesController extends Controller
      */
     public function index()
     {
-        $ingredientes = DB::table('Ingredientes')->orderBy('id_ingrediente')->get();
+        $ingredientes = DB::table('ingredientes')->orderBy('id_ingrediente')->get();
         return view('Ingredientes.index', compact('ingredientes'));
     }
 
@@ -34,7 +34,7 @@ class IngredientesController extends Controller
             'ingrediente' => 'required|string|max:100',
         ]);
 
-        DB::table('Ingredientes')->insert([
+        DB::table('ingredientes')->insert([
             'ingrediente' => $request->ingrediente,
         ]);
 
@@ -46,7 +46,7 @@ class IngredientesController extends Controller
      */
     public function edit($id)
     {
-        $ingrediente = DB::table('Ingredientes')->where('id_ingrediente', $id)->first();
+        $ingrediente = DB::table('ingredientes')->where('id_ingrediente', $id)->first();
 
         if (!$ingrediente) {
             return redirect()->route('ingredientes.index')->with('error', 'Ingrediente no encontrado.');
@@ -64,7 +64,7 @@ class IngredientesController extends Controller
             'ingrediente' => 'required|string|max:100',
         ]);
 
-        DB::table('Ingredientes')->where('id_ingrediente', $id)->update([
+        DB::table('ingredientes')->where('id_ingrediente', $id)->update([
             'ingrediente' => $request->ingrediente,
         ]);
 
@@ -76,7 +76,7 @@ class IngredientesController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Ingredientes')->where('id_ingrediente', $id)->delete();
+        DB::table('ingredientes')->where('id_ingrediente', $id)->delete();
         return redirect()->route('ingredientes.index')->with('success', 'Ingrediente eliminado correctamente.');
     }
 }

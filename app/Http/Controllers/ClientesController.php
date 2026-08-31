@@ -15,7 +15,7 @@ class ClientesController extends Controller
         $buscar = $request->input('buscar');
 
         // Iniciamos la consulta de clientes activos
-        $query = DB::table('Clientes')->where('status', 1);
+        $query = DB::table('clientes')->where('status', 1);
 
         // Si el usuario escribió algo en el buscador, aplicamos el filtro
         if (!empty($buscar)) {
@@ -33,7 +33,7 @@ class ClientesController extends Controller
         $clientesIds = $clientes->pluck('id_clie')->toArray();
 
         // Consultamos solo las direcciones de esos clientes filtrados
-        $direcciones = DB::table('Direcciones')
+        $direcciones = DB::table('direcciones')
             ->where('status', 1)
             ->whereIn('id_clie', $clientesIds)
             ->get();
@@ -67,7 +67,7 @@ class ClientesController extends Controller
             DB::beginTransaction();
 
             // 1. Insertar el cliente y obtener su ID generado
-            $id_clie = DB::table('Clientes')->insertGetId([
+            $id_clie = DB::table('clientes')->insertGetId([
                 'nombre'   => $request->nombre,
                 'apellido' => $request->apellido ?? '',
                 'telefono' => $request->telefono,
@@ -76,7 +76,7 @@ class ClientesController extends Controller
 
             // 2. Insertar la dirección inicial (si el usuario llenó el campo calle)
             if ($request->filled('calle')) {
-                DB::table('Direcciones')->insert([
+                DB::table('direcciones')->insert([
                     'id_clie'    => $id_clie,
                     'calle'      => $request->calle,
                     'manzana'    => $request->manzana ?? '',
@@ -102,14 +102,14 @@ class ClientesController extends Controller
     public function edit($id)
     {
         // Buscamos por id_clie que es tu llave primaria
-        $cliente = DB::table('Clientes')->where('id_clie', $id)->first();
+        $cliente = DB::table('clientes')->where('id_clie', $id)->first();
         
         if (!$cliente) {
             return redirect()->route('clientes.index')->with('error', 'Cliente no encontrado');
         }
 
         // Traemos sus direcciones relacionadas
-        $direcciones = DB::table('Direcciones')
+        $direcciones = DB::table('direcciones')
             ->where('id_clie', $id)
             ->where('status', 1)
             ->get();
@@ -131,7 +131,7 @@ class ClientesController extends Controller
             DB::beginTransaction();
 
             // 1. Actualizar datos básicos del cliente
-            DB::table('Clientes')->where('id_clie', $id)->update([
+            DB::table('clientes')->where('id_clie', $id)->update([
                 'nombre'   => $request->nombre,
                 'apellido' => $request->apellido,
                 'telefono' => $request->telefono
@@ -140,7 +140,7 @@ class ClientesController extends Controller
             // 2. Actualizar cada dirección que se editó en el formulario
             if ($request->has('direcciones')) {
                 foreach ($request->direcciones as $id_dir => $dirData) {
-                    DB::table('Direcciones')->where('id_dir', $id_dir)->where('id_clie', $id)->update([
+                    DB::table('direcciones')->where('id_dir', $id_dir)->update([
                         'calle'      => $dirData['calle'],
                         'manzana'    => $dirData['manzana'] ?? '',
                         'lote'       => $dirData['lote'] ?? '',
@@ -167,7 +167,7 @@ class ClientesController extends Controller
     {
         try {
             // Borrado lógico cambiando status a 0
-            DB::table('Clientes')->where('id_clie', $id)->update(['status' => 0]);
+            DB::table('clientes')->where('id_clie', $id)->update(['status' => 0]);
             
             return redirect()->route('clientes.index')->with('success', 'Cliente desactivado correctamente');
         } catch (\Exception $e) {
@@ -181,7 +181,7 @@ class ClientesController extends Controller
     public function activar($id)
     {
         try {
-            DB::table('Clientes')->where('id_clie', $id)->update(['status' => 1]);
+            DB::table('clientes')->where('id_clie', $id)->update(['status' => 1]);
             return redirect()->route('clientes.index')->with('success', 'Cliente activado correctamente');
         } catch (\Exception $e) {
             return back()->with('error', 'No se pudo activar el cliente.');
@@ -198,7 +198,7 @@ class ClientesController extends Controller
         ]);
 
         try {
-            DB::table('Direcciones')->insert([
+            DB::table('direcciones')->insert([
                 'id_clie'    => $id,
                 'calle'      => $request->calle,
                 'manzana'    => $request->manzana ?? '',
@@ -220,7 +220,7 @@ class ClientesController extends Controller
     public function destroyDireccion($id)
     {
         try {
-            DB::table('Direcciones')->where('id_dir', $id)->update(['status' => 0]);
+            DB::table('direcciones')->where('id_dir', $id)->update(['status' => 0]);
             return back()->with('success', 'Dirección eliminada correctamente');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al eliminar la dirección: ' . $e->getMessage());

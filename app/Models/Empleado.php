@@ -36,7 +36,7 @@ class Empleado extends Authenticatable
     }
 
     public function permisos() {
-        return $this->hasMany(empleadoPermiso::class, 'id_emp', 'id_emp');
+        return $this->hasMany(EmpleadoPermiso::class, 'id_emp', 'id_emp');
     }
 
     /**

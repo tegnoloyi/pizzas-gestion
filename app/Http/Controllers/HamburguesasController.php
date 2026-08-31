@@ -13,9 +13,9 @@ class HamburguesasController extends Controller
      */
     public function index()
     {
-        $hamburguesas = DB::table('Hamburguesas')
-            ->join('CategoriasProd', 'Hamburguesas.id_cat', '=', 'CategoriasProd.id_cat')
-            ->select('Hamburguesas.id_hamb', 'Hamburguesas.paquete', 'Hamburguesas.precio', 'CategoriasProd.descripcion as categoria')
+        $hamburguesas = DB::table('hamburguesas')
+            ->join('categoriasprod', 'hamburguesas.id_cat', '=', 'categoriasprod.id_cat')
+            ->select('hamburguesas.id_hamb', 'hamburguesas.paquete', 'hamburguesas.precio', 'categoriasprod.descripcion as categoria')
             ->get();
 
         return view('Hamburguesas.index', compact('hamburguesas'));
@@ -26,7 +26,7 @@ class HamburguesasController extends Controller
      */
     public function create()
     {
-        $categorias = DB::table('CategoriasProd')->get();
+        $categorias = DB::table('categoriasprod')->get();
         return view('Hamburguesas.create', compact('categorias'));
     }
 
@@ -41,7 +41,7 @@ class HamburguesasController extends Controller
             'id_cat' => 'required|integer'
         ]);
 
-        DB::table('Hamburguesas')->insert([
+        DB::table('hamburguesas')->insert([
             'paquete' => $request->paquete,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -55,8 +55,8 @@ class HamburguesasController extends Controller
      */
     public function edit($id)
     {
-        $hamburguesa = DB::table('Hamburguesas')->where('id_hamb', $id)->first();
-        $categorias = DB::table('CategoriasProd')->get();
+        $hamburguesa = DB::table('hamburguesas')->where('id_hamb', $id)->first();
+        $categorias = DB::table('categoriasprod')->get();
 
         if (!$hamburguesa) {
             return redirect()->route('hamburguesas.index')->with('error', 'Hamburguesa no encontrada.');
@@ -76,7 +76,7 @@ class HamburguesasController extends Controller
             'id_cat' => 'required|integer'
         ]);
         
-        DB::table('Hamburguesas')->where('id_hamb', $id)->update([
+        DB::table('hamburguesas')->where('id_hamb', $id)->update([
             'paquete' => $request->paquete,
             'precio' => $request->precio,
             'id_cat' => $request->id_cat
@@ -90,7 +90,7 @@ class HamburguesasController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('Hamburguesas')->where('id_hamb', $id)->delete();
+        DB::table('hamburguesas')->where('id_hamb', $id)->delete();
         return redirect()->route('hamburguesas.index')->with('success', 'Hamburguesa eliminada correctamente.');
     }
 }

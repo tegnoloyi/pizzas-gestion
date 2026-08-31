@@ -21,7 +21,7 @@ class VentasController extends Controller
     $filtroEstado = $request->input('estado', 'todos');
 
     // 1. Buscar si hay una caja abierta
-    $cajaAbierta = DB::table('Caja')
+    $cajaAbierta = DB::table('caja')
         ->where('status', 1)
         ->where('id_suc', $id_sucursal)
         ->first();
@@ -38,49 +38,49 @@ class VentasController extends Controller
     }
 
     // 3. Construimos la consulta base SIN el filtro de id_caja todavía
-    $query = DB::table('Venta')
-        ->leftJoin('PDomicilio', 'Venta.id_venta', '=', 'PDomicilio.id_venta')
-        ->leftJoin('Clientes', 'PDomicilio.id_clie', '=', 'Clientes.id_clie')
-        ->where('Venta.id_suc', $id_sucursal)
+    $query = DB::table('venta')
+        ->leftJoin('pdomicilio', 'venta.id_venta', '=', 'pdomicilio.id_venta')
+        ->leftJoin('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
+        ->where('venta.id_suc', $id_sucursal)
         ->select(
             'Venta.*', 
-            'Clientes.nombre as cnombre', 
-            'Clientes.apellido as capellido'
+            'clientes.nombre as cnombre', 
+            'clientes.apellido as capellido'
         )
-        ->orderBy('Venta.fecha_hora', 'desc');
+        ->orderBy('venta.fecha_hora', 'desc');
 
     // 4. Aplicamos los filtros de fecha y turno condicionalmente
     if ($filtroFecha == 'hoy') {
         // Si es hoy, limitamos al turno actual (Caja abierta)
         if ($cajaAbierta) {
-            $query->where('Venta.id_caja', $cajaAbierta->id_caja);
+            $query->where('venta.id_caja', $cajaAbierta->id_caja);
         } else {
             // Fallback por si acaso (aunque el if de arriba lo previene)
-            $query->whereDate('Venta.fecha_hora', Carbon::today());
+            $query->whereDate('venta.fecha_hora', Carbon::today());
         }
     } elseif ($filtroFecha == 'semana') {
         // Aseguramos que tome desde el inicio del día 1 hasta el final del último día
         $inicioSemana = Carbon::now()->startOfWeek()->format('Y-m-d 00:00:00');
         $finSemana = Carbon::now()->endOfWeek()->format('Y-m-d 23:59:59');
         
-        $query->whereBetween('Venta.fecha_hora', [$inicioSemana, $finSemana]);
+        $query->whereBetween('venta.fecha_hora', [$inicioSemana, $finSemana]);
     } elseif ($filtroFecha == 'mes') {
-        $query->whereMonth('Venta.fecha_hora', Carbon::now()->month)
-              ->whereYear('Venta.fecha_hora', Carbon::now()->year);
+        $query->whereMonth('venta.fecha_hora', Carbon::now()->month)
+              ->whereYear('venta.fecha_hora', Carbon::now()->year);
     }
 
     // 5. Filtro de Estado
     if ($filtroEstado !== 'todos') {
-        $query->where('Venta.status', $filtroEstado);
+        $query->where('venta.status', $filtroEstado);
     }
 
     $ventas = $query->get();
 
     // 6. Formateo de datos (N+1 evitado en la medida de lo posible)
     foreach ($ventas as $v) {
-        $v->folio_virtual = str_pad($v->id_venta, 5, '0', STR_PAD_LEFT);
+        $v->folio_virtual = str_pad($v->id_venta, STR_PAD_LEFT);
 
-        $v->total_productos = DB::table('DetalleVenta')
+        $v->total_productos = DB::table('detalleventa')
             ->where('id_venta', $v->id_venta)
             ->sum('cantidad');
         
@@ -102,13 +102,13 @@ class VentasController extends Controller
      */
     public function ticket($id)
     {
-        $venta = DB::table('Venta')->where('id_venta', $id)->first();
+        $venta = DB::table('venta')->where('id_venta', $id)->first();
         if (!$venta) abort(404);
 
         // AQUÍ ESTÁ EL TRUCO: Creamos el folio virtual SIN FECHA antes de enviarlo al ticket
-        $venta->folio_virtual = str_pad($venta->id_venta, 5, '0', STR_PAD_LEFT);
+        $venta->folio_virtual = str_pad($venta->id_venta, STR_PAD_LEFT);
 
-        $final_items = DB::table('DetalleVenta')
+        $final_items = DB::table('detalleventa')
             ->where('id_venta', $id)
             ->select('cantidad', 'nombre', 'total', 'subs')
             ->get()
@@ -117,10 +117,10 @@ class VentasController extends Controller
                 return $item;
             });
 
-        $pagos = DB::table('Pago')->where('id_venta', $id)->get();
+        $pagos = DB::table('pago')->where('id_venta', $id)->get();
         
-        $domicilio = DB::table('PDomicilio')
-            ->join('Clientes', 'PDomicilio.id_clie', '=', 'Clientes.id_clie')
+        $domicilio = DB::table('pdomicilio')
+            ->join('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
             ->where('id_venta', $id)
             ->select('Clientes.*', 'PDomicilio.*')
             ->first();
@@ -138,7 +138,7 @@ class VentasController extends Controller
         $usuario = auth()->user()->nombre ?? 'Admin';
 
         // Marcamos como cancelado y añadimos el motivo a los comentarios
-        DB::table('Venta')->where('id_venta', $id_venta)->update([
+        DB::table('venta')->where('id_venta', $id_venta)->update([
             'status' => 3,
             'comentarios' => DB::raw("CONCAT(COALESCE(comentarios, ''), ' | CANCELADO - Motivo: $motivo | Por: $usuario')")
         ]);

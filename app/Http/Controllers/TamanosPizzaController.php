@@ -13,7 +13,7 @@ class TamanosPizzaController extends Controller
      */
     public function index()
     {
-        $tamanos = DB::table('TamanosPizza')->orderBy('id_tamañop')->get();
+        $tamanos = DB::table('tamanospizza')->orderBy('id_tamañop')->get();
         return view('TamanosPizza.index', compact('tamanos'));
     }
 
@@ -35,7 +35,7 @@ class TamanosPizzaController extends Controller
             'precio' => 'required|numeric|min:0',
         ]);
 
-        DB::table('TamanosPizza')->insert([
+        DB::table('tamanospizza')->insert([
             'tamano' => $request->tamano,
             'precio' => $request->precio,
         ]);
@@ -48,7 +48,7 @@ class TamanosPizzaController extends Controller
      */
     public function edit($id)
     {
-        $tamano = DB::table('TamanosPizza')->where('id_tamañop', $id)->first();
+        $tamano = DB::table('tamanospizza')->where('id_tamañop', $id)->first();
 
         if (!$tamano) {
             return redirect()->route('tamanos-pizza.index')->with('error', 'Tamaño no encontrado.');
@@ -67,7 +67,7 @@ class TamanosPizzaController extends Controller
             'precio' => 'required|numeric|min:0',
         ]);
 
-        DB::table('TamanosPizza')->where('id_tamañop', $id)->update([
+        DB::table('tamanospizza')->where('id_tamañop', $id)->update([
             'tamano' => $request->tamano,
             'precio' => $request->precio,
         ]);
@@ -80,7 +80,7 @@ class TamanosPizzaController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('TamanosPizza')->where('id_tamañop', $id)->delete();
+        DB::table('tamanospizza')->where('id_tamañop', $id)->delete();
         return redirect()->route('tamanos-pizza.index')->with('success', 'Tamaño de pizza eliminado correctamente.');
     }
 }

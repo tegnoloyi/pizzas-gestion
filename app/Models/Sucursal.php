@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sucursal extends Model
 {
-    protected $table = 'Sucursal';
+    protected $table = 'sucursal';
     protected $primaryKey = 'id_suc';
     public $timestamps = false;
 

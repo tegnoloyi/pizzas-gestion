@@ -302,10 +302,10 @@
                                 }
                             } elseif ($venta->tipo_servicio == 3) {
                                 // Buscar nombre real por si el sistema traía "DOMICILIO" guardado por error
-                                $clie_real = \Illuminate\Support\Facades\DB::table('PDomicilio')
-                                    ->join('Clientes', 'PDomicilio.id_clie', '=', 'Clientes.id_clie')
-                                    ->where('PDomicilio.id_venta', $venta->id_venta)
-                                    ->select('Clientes.nombre', 'Clientes.apellido')
+                                $clie_real = \Illuminate\Support\Facades\DB::table('pdomicilio')
+                                    ->join('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
+                                    ->where('pdomicilio.id_venta', $venta->id_venta)
+                                    ->select('clientes.nombre', 'clientes.apellido')
                                     ->first();
                                 if ($clie_real && !empty(trim($clie_real->nombre))) {
                                     $nClie = ' - ' . mb_strtoupper(trim($clie_real->nombre . ' ' . $clie_real->apellido));
@@ -391,7 +391,7 @@
                                         </button>
                                     @endif
 
-                                    <button @click="verTicketPreview({{ $venta->id_venta }})" title="Ver Ticket" class="resume-action text-slate-400 bg-white shadow-sm border border-gray-100 p-2 rounded-xl transition-all">
+                                    <button @click="imprimirTicketPop({{ $venta->id_venta }})" title="Reimprimir" class="resume-action text-slate-400 bg-white shadow-sm border border-gray-100 p-2 rounded-xl transition-all">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                                     </button>
                                 </div>
@@ -565,31 +565,11 @@
         </div>
     </div>
 
-    <div x-show="modalTicket" x-cloak class="fixed inset-0 bg-black/50 z-[110] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[30px] shadow-2xl w-[380px] max-h-[90vh] flex flex-col overflow-hidden" @click.away="modalTicket = false">
-            <div class="p-5 bg-slate-800 text-white flex justify-between items-center shrink-0">
-                <h2 class="font-black italic uppercase text-sm tracking-wider">Vista Previa del Ticket</h2>
-                <button @click="modalTicket = false" class="hover:rotate-90 transition-transform font-black text-2xl leading-none">&times;</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto bg-gray-200 p-3">
-                <iframe :src="modalTicket ? ('/venta/pos/ticket/' + ticketVentaId + '?preview=1') : ''" class="w-full bg-white shadow-md mx-auto block" style="height: 600px; border: none;"></iframe>
-            </div>
-
-            <div class="p-4 bg-gray-50 border-t border-gray-100 flex gap-3 shrink-0">
-                <button @click="modalTicket = false" class="flex-1 font-bold text-gray-500 bg-white border border-gray-200 rounded-xl py-3">Cerrar</button>
-                <button @click="imprimirTicketPop(ticketVentaId)" class="flex-1 font-black rounded-xl py-3 uppercase italic bg-slate-800 hover:bg-black text-white shadow-md transition-colors">Imprimir</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('historialApp', () => ({
                 modalPago: false,
                 modalCancelar: false,
-                modalTicket: false,
-                ticketVentaId: null,
                 esAdmin: {{ (auth()->check() && auth()->user()->id_ca == 1) ? 'true' : 'false' }},
                 admin_password_cancelar: '',
                 adminPassErrorCancelar: '',
@@ -612,11 +592,6 @@
                     efectivo: { activo: false, monto: null, entregado: null },
                     tarjeta: { activo: false, monto: null },
                     transferencia: { activo: false, monto: null, referencia: '' }
-                },
-
-                verTicketPreview(id) {
-                    this.ticketVentaId = id;
-                    this.modalTicket = true;
                 },
 
                 imprimirTicketPop(id) {

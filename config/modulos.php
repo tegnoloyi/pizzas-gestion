@@ -17,6 +17,7 @@ return [
     'empleados'     => 'Empleados',
     'productos'     => 'Catálogo de Productos',
     'recursos'      => 'Categorías / Sucursales / Cargos',
+    'promociones'   => 'Promociones',
     'caja'          => 'Corte Mensual',
     'configuracion' => 'Configuración',
 ];

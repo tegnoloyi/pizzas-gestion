@@ -1932,6 +1932,7 @@
             csrfToken: '{{ csrf_token() }}',
             cartPreloaded: {!! json_encode($cart_preloaded ?? [], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP) !!},
             esAdmin: {{ (auth()->check() && auth()->user()->id_ca == 1) ? 'true' : 'false' }},
+            promo2x1Activa: {{ $promo_2x1_activa ? 'true' : 'false' }},
             pagosPreviosRAW: {!! json_encode($pagos_edit ?? [], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP) !!},
             domicilioPrevio: {!! json_encode($domicilio_edit ?? null, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP) !!},
             pespecialPrevio: {!! json_encode($pespecial_edit ?? null, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP) !!},

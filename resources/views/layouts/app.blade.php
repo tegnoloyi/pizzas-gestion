@@ -673,6 +673,11 @@
                             <span :class="sidebarExpanded ? 'block' : 'block lg:hidden'" class="text-sm font-bold uppercase italic tracking-tighter whitespace-nowrap">Corte Mensual</span>
                         </a>
 
+                        <a href="{{ route('promociones.index') }}" @click="handleSidebarNavigation($event)" class="flex items-center px-4 py-3 rounded-xl transition-all {{ request()->routeIs('promociones.*') ? 'bg-black text-amber-400 shadow-xl' : 'hover:bg-black/5 font-bold' }}" :class="sidebarExpanded ? 'gap-3 justify-start' : 'justify-start lg:justify-center'">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                            <span :class="sidebarExpanded ? 'block' : 'block lg:hidden'" class="text-sm font-bold uppercase italic tracking-tighter whitespace-nowrap">Promociones</span>
+                        </a>
+
                         {{-- 1. MENÚ DESPLEGABLE: CATEGORÍAS --}}
                         <div x-data="{ openCat: @js($catActive) }">
                             <button @click="if(window.innerWidth >= 1024 && !sidebarExpanded) { sidebarExpanded = true; openCat = true; } else { openCat = !openCat; }" class="w-full flex items-center px-4 py-3 rounded-xl font-bold transition-all {{ $catActive ? 'bg-black text-amber-400 shadow-xl' : 'hover:bg-black/5 text-slate-900' }}" :class="sidebarExpanded ? 'justify-between' : 'justify-start lg:justify-center'">

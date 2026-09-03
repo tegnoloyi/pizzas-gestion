@@ -82,6 +82,7 @@ class PuntoVentaController extends Controller
         $clientes = []; $direcciones = [];
         try { $clientes = DB::table('clientes')->where('status', 1)->get(); $direcciones = DB::table('direcciones')->where('status', 1)->get(); } catch (\Exception $e) {}
         $magno_precio = DB::table('magno')->value('precio') ?? 0;
+        $promo_2x1_activa = (bool) DB::table('promociones')->where('tipo', 'pizza_2x1')->value('activa');
 
         $venta_edit = null;
         $cart_preloaded = [];
@@ -145,7 +146,7 @@ class PuntoVentaController extends Controller
                         $j = json_decode($det->id_barr); $item['col'] = 'id_barr'; $item['db_id'] = $j->id ?? null; $item['nombre_base'] = "Pizza de Barra";
                         if(isset($j->medios)) { $item['medios'] = $j->medios; $counts = array_count_values((array)$j->medios); $parts = []; foreach($counts as $k => $v) { $parts[] = "$v/2 $k"; } $item['variante'] = implode(", ", $parts); }
                     } elseif ($det->id_magno) {
-                        $j = json_decode($det->id_magno); $item['col'] = 'id_magno'; $item['is_magno'] = true; $item['nombre_base'] = "Magno";
+                        $j = json_decode($det->id_magno); $item['col'] = 'id_magno'; $item['is_magno'] = true; $item['nombre_base'] = "magno";
                         if(isset($j->medios)) { $item['medios'] = $j->medios; $counts = array_count_values((array)$j->medios); $parts = []; foreach($counts as $k => $v) { $parts[] = "$v/2 $k"; } $item['variante'] = implode(" / ", $parts) . "\n• 1 Refresco de 2L"; }
                     } elseif ($det->id_paquete) {
                         $j = json_decode($det->id_paquete); 
@@ -173,7 +174,7 @@ class PuntoVentaController extends Controller
             'magno_precio' => $magno_precio, 'precios_orilla' => $this->getPreciosOrilla(),
             'venta_edit' => $venta_edit, 'cart_preloaded' => $cart_preloaded,
             'pagos_edit' => $pagos_edit, 'domicilio_edit' => $domicilio_edit,
-            'pespecial_edit' => $pespecial_edit
+            'pespecial_edit' => $pespecial_edit, 'promo_2x1_activa' => $promo_2x1_activa
         ]);
     }
 
@@ -354,6 +355,22 @@ class PuntoVentaController extends Controller
             $id_venta = $request->id_venta;
             $venta = DB::table('venta')->where('id_venta', $id_venta)->first();
 
+            if (!$venta) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Venta no encontrada'], 404);
+            }
+
+            // Igual que en store(): si la venta ya está cobrada o cancelada,
+            // se requiere contraseña de admin para volver a tocarla.
+            if (in_array($venta->status, [1, 3]) && !$this->autorizarEdicionAdmin($request)) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Esta venta ya fue cobrada o cancelada. Se requiere contraseña de administrador.',
+                    'requiere_admin' => true
+                ], 403);
+            }
+
             $updateData = ['status' => 1];
 
             if ($request->has('cortesia') && $request->cortesia > 0) {
@@ -417,6 +434,11 @@ class PuntoVentaController extends Controller
             $id_venta = $request->id_venta;
             $venta = DB::table('venta')->where('id_venta', $id_venta)->first();
 
+            if (!$venta) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Venta no encontrada'], 404);
+            }
+
             $updateData = [];
 
             if ($request->has('cortesia') && $request->cortesia > 0) {
@@ -464,7 +486,7 @@ class PuntoVentaController extends Controller
         $venta = DB::table('venta')->where('id_venta', $id)->first();
         if(!$venta) abort(404);
 
-        $venta->folio_virtual = Carbon::parse($venta->fecha_hora)->format('d-m-y') . ' ' . str_pad($venta->id_venta, STR_PAD_LEFT);
+        $venta->folio_virtual = Carbon::parse($venta->fecha_hora)->format('d-m-y') . ' ' . str_pad($venta->id_venta, 5, '0', STR_PAD_LEFT);
 
         $comentarios_limpios = [];
         if ($venta->comentarios) {
@@ -799,7 +821,7 @@ class PuntoVentaController extends Controller
                 ->join('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
                 ->join('direcciones', 'pdomicilio.id_dir', '=', 'direcciones.id_dir')
                 ->where('pdomicilio.id_venta', $id)
-                ->select('clientes.nombre as cnombre', 'clientes.apellido as capellido', 'clientes.telefono', 'Direcciones.*')
+                ->select('clientes.nombre as cnombre', 'clientes.apellido as capellido', 'clientes.telefono', 'direcciones.*')
                 ->first();
         }
 
@@ -815,7 +837,7 @@ class PuntoVentaController extends Controller
             ->leftJoin('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
             ->where('venta.id_suc', $id_sucursal)
             ->orderBy('venta.fecha_hora', 'desc')
-            ->select('Venta.*', 'clientes.nombre as cnombre', 'clientes.apellido as capellido')
+            ->select('venta.*', 'clientes.nombre as cnombre', 'clientes.apellido as capellido')
             ->get();
 
         foreach ($ventas as $v) {

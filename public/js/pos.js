@@ -343,6 +343,18 @@
                         let pArr = grouped[size];
                         pArr.sort((a, b) => b.price - a.price);
 
+                        if (!window.posConfig.promo2x1Activa) {
+                            // Promo apagada desde el panel de Promociones: cada pizza se
+                            // cobra completa, sin emparejar ni aplicar el 40% a la impar.
+                            pArr.forEach(p => {
+                                p.item.precioCobrado = p.price;
+                                p.item.precioFinal = p.price + (p.item.orilla_queso ? p.item.precio_orilla : 0);
+                                let subGroup = p.price + (p.item.orilla_queso ? p.item.precio_orilla : 0);
+                                this.cartGroups.push({ id_grupo: this.generateUID(), type: 'pizza_pair', size: this.cleanSize(size), items: [p], subtotal: subGroup });
+                            });
+                            continue;
+                        }
+
                         for (let i = 0; i < pArr.length; i += 2) {
                             let p1 = pArr[i];
                             let p2 = pArr[i + 1];

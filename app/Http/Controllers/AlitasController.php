@@ -9,7 +9,7 @@ class AlitasController extends Controller
 {
     /**
      * Mostrar la lista de alitas.
-     * Tablas corregidas: 'Alitas' y 'CategoriasProd'.
+     * Tablas corregidas: 'alitas' y 'categoriasprod'.
      */
     public function index()
     {
@@ -31,7 +31,7 @@ class AlitasController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Alitas'.
+     * Guardar en la tabla 'alitas'.
      */
     public function store(Request $request)
     {
@@ -66,7 +66,7 @@ class AlitasController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Alitas'.
+     * Actualizar registro en 'alitas'.
      */
     public function update(Request $request, $id)
     {
@@ -86,7 +86,7 @@ class AlitasController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Alitas'.
+     * Eliminar registro de 'alitas'.
      */
     public function destroy($id)
     {

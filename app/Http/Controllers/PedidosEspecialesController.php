@@ -16,7 +16,7 @@ class PedidosEspecialesController extends Controller
             ->join('venta', 'pespeciales.id_venta', '=', 'venta.id_venta')
             ->leftJoin('clientes', 'pespeciales.id_clie', '=', 'clientes.id_clie')
             ->select(
-                'PEspeciales.*',
+                'pespeciales.*',
                 'venta.total',
                 'venta.nombreClie as venta_nombre',
                 'venta.comentarios',
@@ -97,7 +97,7 @@ class PedidosEspecialesController extends Controller
                 
                 // Borramos los detalles viejos para insertar los nuevos del carrito
                 DB::table('detalleventa')->where('id_venta', $id_venta)->delete();
-                // OJO: NO BORRAMOS 'Pago' porque los anticipos ya están físicamente en el corte de caja pasado.
+                // OJO: NO BORRAMOS 'pago' porque los anticipos ya están físicamente en el corte de caja pasado.
                 
             } else {
                 // --- MODO CREACIÓN NUEVA ---

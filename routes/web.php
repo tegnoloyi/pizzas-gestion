@@ -33,7 +33,7 @@ use App\Http\Controllers\PermisosController;
 use App\Http\Controllers\TamanosPizzaController;
 use App\Http\Controllers\TamanosRefrescosController;
 use App\Http\Controllers\IngredientesController;
-use App\Http\Controllers\PromocionesController;
+use App\Http\Controllers\PromocionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -194,8 +194,8 @@ Route::middleware(['auth'])->group(function () {
 
     // --- PROMOCIONES (módulo de permiso propio, no comparte 'recursos') ---
     Route::middleware('permiso:promociones,gestionar')->group(function () {
-        Route::resource('promociones', PromocionesController::class);
-        Route::patch('promociones/{id}/toggle', [PromocionesController::class, 'toggle'])->name('promociones.toggle');
+        Route::resource('promociones', PromocionController::class);
+        Route::patch('promociones/{id}/toggle', [PromocionController::class, 'toggle'])->name('promociones.toggle');
     });
 
     // --- CONFIGURACIÓN ---

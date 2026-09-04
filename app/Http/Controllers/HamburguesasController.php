@@ -9,7 +9,7 @@ class HamburguesasController extends Controller
 {
     /**
      * Mostrar la lista de hamburguesas.
-     * Tablas corregidas: 'Hamburguesas' y 'CategoriasProd'.
+     * Tablas corregidas: 'hamburguesas' y 'categoriasprod'.
      */
     public function index()
     {
@@ -31,7 +31,7 @@ class HamburguesasController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Hamburguesas'.
+     * Guardar en la tabla 'hamburguesas'.
      */
     public function store(Request $request)
     {
@@ -66,7 +66,7 @@ class HamburguesasController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Hamburguesas'.
+     * Actualizar registro en 'hamburguesas'.
      */
     public function update(Request $request, $id)
     {
@@ -86,7 +86,7 @@ class HamburguesasController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Hamburguesas'.
+     * Eliminar registro de 'hamburguesas'.
      */
     public function destroy($id)
     {

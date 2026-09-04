@@ -9,7 +9,7 @@ class PapasController extends Controller
 {
     /**
      * Mostrar la lista de papas.
-     * Tablas corregidas: 'OrdenDePapas' y 'CategoriasProd'.
+     * Tablas corregidas: 'ordendepapas' y 'categoriasprod'.
      */
     public function index()
     {
@@ -31,7 +31,7 @@ class PapasController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'OrdenDePapas'.
+     * Guardar en la tabla 'ordendepapas'.
      */
     public function store(Request $request)
     {
@@ -66,7 +66,7 @@ class PapasController extends Controller
     }
 
     /**
-     * Actualizar registro en 'OrdenDePapas'.
+     * Actualizar registro en 'ordendepapas'.
      */
     public function update(Request $request, $id)
     {
@@ -86,7 +86,7 @@ class PapasController extends Controller
     }
 
     /**
-     * Eliminar registro de 'OrdenDePapas'.
+     * Eliminar registro de 'ordendepapas'.
      */
     public function destroy($id)
     {

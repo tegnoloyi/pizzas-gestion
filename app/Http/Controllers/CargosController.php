@@ -9,10 +9,10 @@ class CargosController extends Controller
 {
     public function index()
     {
-        // Se corrige a 'Cargos' y 'Permisos' para coincidir con la DB
+        // Se corrige a 'cargos' y 'permisos' para coincidir con la DB
         $cargos = DB::table('cargos')
             ->leftJoin('permisos', 'cargos.id_ca', '=', 'permisos.id_cargo')
-            ->select('cargos.id_ca', 'cargos.nombre', 'Permisos.*')
+            ->select('cargos.id_ca', 'cargos.nombre', 'permisos.*')
             ->get();
             
         return view('Cargos.index', compact('cargos'));
@@ -29,12 +29,12 @@ class CargosController extends Controller
             'nombre' => 'required|string|max:255',
         ]);
 
-        // Se utiliza la tabla 'Cargos'
+        // Se utiliza la tabla 'cargos'
         $id_ca = DB::table('cargos')->insertGetId([
             'nombre' => $request->nombre
         ]);
 
-        // Se utiliza la tabla 'Permisos'
+        // Se utiliza la tabla 'permisos'
         DB::table('permisos')->insert([
             'id_cargo' => $id_ca,
             'crear_producto' => $request->has('crear_producto') ? 1 : 0,
@@ -65,7 +65,7 @@ class CargosController extends Controller
     {
         $cargo = DB::table('cargos')
             ->leftJoin('permisos', 'cargos.id_ca', '=', 'permisos.id_cargo')
-            ->select('cargos.id_ca', 'cargos.nombre', 'Permisos.*')
+            ->select('cargos.id_ca', 'cargos.nombre', 'permisos.*')
             ->where('cargos.id_ca', $id)
             ->first();
             

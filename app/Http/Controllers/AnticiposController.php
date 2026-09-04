@@ -32,6 +32,6 @@ class AnticiposController extends Controller
             ->orderBy('pespeciales.fecha_entrega', 'asc')
             ->get();
 
-        return view('ventas.anticipos', compact('anticipos', 'filtroEstado'));
+        return view('Ventas.anticipos', compact('anticipos', 'filtroEstado'));
     }
 }

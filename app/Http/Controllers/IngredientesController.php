@@ -9,7 +9,7 @@ class IngredientesController extends Controller
 {
     /**
      * Mostrar la lista de ingredientes.
-     * Tabla: 'Ingredientes' (usada también por el POS en pizzas "Por Ingrediente").
+     * Tabla: 'ingredientes' (usada también por el POS en pizzas "Por Ingrediente").
      */
     public function index()
     {
@@ -26,7 +26,7 @@ class IngredientesController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Ingredientes'.
+     * Guardar en la tabla 'ingredientes'.
      */
     public function store(Request $request)
     {
@@ -56,7 +56,7 @@ class IngredientesController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Ingredientes'.
+     * Actualizar registro en 'ingredientes'.
      */
     public function update(Request $request, $id)
     {
@@ -72,7 +72,7 @@ class IngredientesController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Ingredientes'.
+     * Eliminar registro de 'ingredientes'.
      */
     public function destroy($id)
     {

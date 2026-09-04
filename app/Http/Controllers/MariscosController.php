@@ -9,7 +9,7 @@ class MariscosController extends Controller
 {
     /**
      * Mostrar la lista de pizzas de mariscos.
-     * Tablas corregidas: 'PizzasMariscos', 'CategoriasProd' y 'TamanosPizza'.
+     * Tablas corregidas: 'pizzasmariscos', 'categoriasprod' y 'tamanospizza'.
      */
     public function index()
     {
@@ -40,7 +40,7 @@ class MariscosController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'PizzasMariscos'.
+     * Guardar en la tabla 'pizzasmariscos'.
      */
     public function store(Request $request)
     {
@@ -79,7 +79,7 @@ class MariscosController extends Controller
     }
 
     /**
-     * Actualizar registro en 'PizzasMariscos'.
+     * Actualizar registro en 'pizzasmariscos'.
      */
     public function update(Request $request, $id)
     {
@@ -101,7 +101,7 @@ class MariscosController extends Controller
     }
 
     /**
-     * Eliminar registro de 'PizzasMariscos'.
+     * Eliminar registro de 'pizzasmariscos'.
      */
     public function destroy($id)
     {

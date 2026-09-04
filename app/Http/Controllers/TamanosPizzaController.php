@@ -9,7 +9,7 @@ class TamanosPizzaController extends Controller
 {
     /**
      * Mostrar la lista de tamaños de pizza.
-     * Tabla: 'TamanosPizza' (compartida también por Mariscos).
+     * Tabla: 'tamanospizza' (compartida también por Mariscos).
      */
     public function index()
     {
@@ -26,7 +26,7 @@ class TamanosPizzaController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'TamanosPizza'.
+     * Guardar en la tabla 'tamanospizza'.
      */
     public function store(Request $request)
     {
@@ -58,7 +58,7 @@ class TamanosPizzaController extends Controller
     }
 
     /**
-     * Actualizar registro en 'TamanosPizza'.
+     * Actualizar registro en 'tamanospizza'.
      */
     public function update(Request $request, $id)
     {
@@ -76,7 +76,7 @@ class TamanosPizzaController extends Controller
     }
 
     /**
-     * Eliminar registro de 'TamanosPizza'.
+     * Eliminar registro de 'tamanospizza'.
      */
     public function destroy($id)
     {

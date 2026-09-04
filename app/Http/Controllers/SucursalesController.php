@@ -9,7 +9,7 @@ class SucursalesController extends Controller
 {
     public function index()
     {
-        // Consultamos la tabla singular 'Sucursal' (Ya confirmamos que así se llama)
+        // Consultamos la tabla singular 'sucursal' (Ya confirmamos que así se llama)
         $sucursales = DB::table('sucursal')->get();
         
         // CORRECCIÓN: La carpeta física en tu proyecto es 'Sucursales' con S mayúscula

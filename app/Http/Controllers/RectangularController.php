@@ -9,7 +9,7 @@ class RectangularController extends Controller
 {
     /**
      * Mostrar la lista de pizzas rectangulares.
-     * Tablas corregidas: 'Rectangular', 'Especialidades' y 'CategoriasProd'.
+     * Tablas corregidas: 'rectangular', 'especialidades' y 'categoriasprod'.
      */
     public function index()
     {
@@ -39,7 +39,7 @@ class RectangularController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Rectangular'.
+     * Guardar en la tabla 'rectangular'.
      */
     public function store(Request $request)
     {
@@ -76,7 +76,7 @@ class RectangularController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Rectangular'.
+     * Actualizar registro en 'rectangular'.
      */
     public function update(Request $request, $id)
     {
@@ -96,7 +96,7 @@ class RectangularController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Rectangular'.
+     * Eliminar registro de 'rectangular'.
      */
     public function destroy($id)
     {

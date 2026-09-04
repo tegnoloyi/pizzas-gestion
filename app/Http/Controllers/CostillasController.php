@@ -9,7 +9,7 @@ class CostillasController extends Controller
 {
     /**
      * Mostrar la lista de costillas.
-     * Tablas corregidas a 'Costillas' y 'CategoriasProd'.
+     * Tablas corregidas a 'costillas' y 'categoriasprod'.
      */
     public function index()
     {
@@ -31,7 +31,7 @@ class CostillasController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Costillas'.
+     * Guardar en la tabla 'costillas'.
      */
     public function store(Request $request)
     {
@@ -66,7 +66,7 @@ class CostillasController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Costillas'.
+     * Actualizar registro en 'costillas'.
      */
     public function update(Request $request, $id)
     {
@@ -86,7 +86,7 @@ class CostillasController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Costillas'.
+     * Eliminar registro de 'costillas'.
      */
     public function destroy($id)
     {

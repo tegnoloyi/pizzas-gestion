@@ -20,7 +20,7 @@ class FlujoCajaController extends Controller
         
         $cajaAbierta = DB::table('caja')
             ->leftJoin('empleados', 'caja.id_emp', '=', 'empleados.id_emp')
-            ->select('Caja.*', 'Empleados.nickName as cajero_nombre')
+            ->select('caja.*', 'empleados.nickName as cajero_nombre')
             ->where('caja.status', 1)
             ->where('caja.id_suc', $id_sucursal)
             ->first();
@@ -37,7 +37,7 @@ class FlujoCajaController extends Controller
             $gastos_detalle = DB::table('gastos')
                 ->leftJoin('empleados', 'gastos.id_emp', '=', 'empleados.id_emp')
                 ->where('id_caja', $cajaAbierta->id_caja)
-                ->select('Gastos.*', 'Empleados.nickName as responsable')
+                ->select('gastos.*', 'empleados.nickName as responsable')
                 ->get();
         } catch (\Exception $e) {
             $gastos_raw = DB::table('gastos')->where('id_caja', $cajaAbierta->id_caja)->get();
@@ -117,7 +117,7 @@ class FlujoCajaController extends Controller
     {
         $caja = DB::table('caja')
             ->leftJoin('empleados', 'caja.id_emp', '=', 'empleados.id_emp')
-            ->select('Caja.*', 'Empleados.nickName as responsable_apertura')
+            ->select('caja.*', 'empleados.nickName as responsable_apertura')
             ->where('id_caja', $id)->first();
 
         if (!$caja) abort(404);
@@ -128,7 +128,7 @@ class FlujoCajaController extends Controller
             $gastos = DB::table('gastos')
                 ->leftJoin('empleados', 'gastos.id_emp', '=', 'empleados.id_emp')
                 ->where('id_caja', $id)
-                ->select('Gastos.*', 'Empleados.nickName as responsable')
+                ->select('gastos.*', 'empleados.nickName as responsable')
                 ->get();
         } catch (\Exception $e) {
             $gastos_raw = DB::table('gastos')->where('id_caja', $id)->get();
@@ -200,7 +200,7 @@ class FlujoCajaController extends Controller
         $id_sucursal = 1;
         $cajas = DB::table('caja')
             ->leftJoin('empleados', 'caja.id_emp', '=', 'empleados.id_emp')
-            ->select('Caja.*', 'Empleados.nickName as cajero_nombre')
+            ->select('caja.*', 'empleados.nickName as cajero_nombre')
             ->where('caja.id_suc', $id_sucursal)
             ->where('caja.status', 0)
             ->orderBy('caja.fecha_cierre', 'desc')

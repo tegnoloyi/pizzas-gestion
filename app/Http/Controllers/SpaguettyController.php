@@ -9,7 +9,7 @@ class SpaguettyController extends Controller
 {
     /**
      * Mostrar la lista de spaguetty.
-     * Tablas corregidas a 'Spaguetty' y 'CategoriasProd'.
+     * Tablas corregidas a 'spaguetty' y 'categoriasprod'.
      */
     public function index()
     {
@@ -36,7 +36,7 @@ class SpaguettyController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Spaguetty'.
+     * Guardar en la tabla 'spaguetty'.
      */
     public function store(Request $request)
     {
@@ -72,7 +72,7 @@ class SpaguettyController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Spaguetty'.
+     * Actualizar registro en 'spaguetty'.
      */
     public function update(Request $request, $id)
     {
@@ -92,7 +92,7 @@ class SpaguettyController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Spaguetty'.
+     * Eliminar registro de 'spaguetty'.
      */
     public function destroy($id)
     {

@@ -12,7 +12,7 @@ class EmpleadoController extends Controller
 {
     public function index()
     {
-        // Cargamos las relaciones exactas: 'Cargos' (id_ca) y 'Sucursal' (singular)
+        // Cargamos las relaciones exactas: 'cargos' (id_ca) y 'sucursal' (singular)
         $empleados = Empleado::with(['cargo', 'sucursal'])->get();
         return view('empleados.index', compact('empleados'));
     }

@@ -32,7 +32,7 @@ class PedidosController extends Controller
             ->where('venta.id_caja', $cajaAbierta->id_caja) 
             ->where('venta.status', '!=', 3) 
             ->select(
-                'Venta.*', 
+                'venta.*', 
                 'clientes.nombre as cnombre', 
                 'clientes.apellido as capellido', 
                 'clientes.telefono', 

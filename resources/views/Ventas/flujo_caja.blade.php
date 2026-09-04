@@ -267,7 +267,7 @@
                                                 if(isset($venta->comentarios)) {
                                                     $comentario = strtoupper($venta->comentarios);
                                                 } else {
-                                                    $comentario_bd = DB::table('Venta')->where('id_venta', $venta->id_venta ?? 0)->value('comentarios');
+                                                    $comentario_bd = DB::table('venta')->where('id_venta', $venta->id_venta ?? 0)->value('comentarios');
                                                     $comentario = strtoupper($comentario_bd ?? '');
                                                 }
 

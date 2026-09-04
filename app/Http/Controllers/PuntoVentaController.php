@@ -82,7 +82,8 @@ class PuntoVentaController extends Controller
         $clientes = []; $direcciones = [];
         try { $clientes = DB::table('clientes')->where('status', 1)->get(); $direcciones = DB::table('direcciones')->where('status', 1)->get(); } catch (\Exception $e) {}
         $magno_precio = DB::table('magno')->value('precio') ?? 0;
-        $promo_2x1_activa = (bool) DB::table('promociones')->where('tipo', 'pizza_2x1')->value('activa');
+        $promo_2x1_activa = false;
+        try { $promo_2x1_activa = (bool) DB::table('promociones')->where('clave', 'pizza_2x1')->value('activa'); } catch (\Exception $e) {}
 
         $venta_edit = null;
         $cart_preloaded = [];

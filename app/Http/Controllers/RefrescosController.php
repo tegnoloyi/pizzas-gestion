@@ -9,7 +9,7 @@ class RefrescosController extends Controller
 {
     /**
      * Mostrar la lista de refrescos.
-     * Tablas corregidas: 'Refrescos', 'TamanosRefrescos' y 'CategoriasProd'.
+     * Tablas corregidas: 'refrescos', 'tamanosrefrescos' y 'categoriasprod'.
      */
     public function index()
     {
@@ -40,7 +40,7 @@ class RefrescosController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Refrescos'.
+     * Guardar en la tabla 'refrescos'.
      */
     public function store(Request $request)
     {
@@ -77,7 +77,7 @@ class RefrescosController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Refrescos'.
+     * Actualizar registro en 'refrescos'.
      */
     public function update(Request $request, $id)
     {
@@ -97,7 +97,7 @@ class RefrescosController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Refrescos'.
+     * Eliminar registro de 'refrescos'.
      */
     public function destroy($id)
     {

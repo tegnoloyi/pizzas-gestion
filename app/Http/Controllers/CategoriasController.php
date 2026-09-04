@@ -9,7 +9,7 @@ class CategoriasController extends Controller
 {
     /**
      * Mostrar la lista de categorías.
-     * Tabla corregida: 'CategoriasProd'.
+     * Tabla corregida: 'categoriasprod'.
      */
     public function index()
     {
@@ -26,7 +26,7 @@ class CategoriasController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'CategoriasProd'.
+     * Guardar en la tabla 'categoriasprod'.
      */
     public function store(Request $request)
     {
@@ -56,7 +56,7 @@ class CategoriasController extends Controller
     }
 
     /**
-     * Actualizar registro en 'CategoriasProd'.
+     * Actualizar registro en 'categoriasprod'.
      */
     public function update(Request $request, $id)
     {
@@ -72,7 +72,7 @@ class CategoriasController extends Controller
     }
 
     /**
-     * Eliminar registro de 'CategoriasProd'.
+     * Eliminar registro de 'categoriasprod'.
      */
     public function destroy($id)
     {

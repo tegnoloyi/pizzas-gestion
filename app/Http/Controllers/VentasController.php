@@ -43,7 +43,7 @@ class VentasController extends Controller
         ->leftJoin('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
         ->where('venta.id_suc', $id_sucursal)
         ->select(
-            'Venta.*', 
+            'venta.*', 
             'clientes.nombre as cnombre', 
             'clientes.apellido as capellido'
         )
@@ -122,7 +122,7 @@ class VentasController extends Controller
         $domicilio = DB::table('pdomicilio')
             ->join('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
             ->where('id_venta', $id)
-            ->select('Clientes.*', 'PDomicilio.*')
+            ->select('clientes.*', 'pdomicilio.*')
             ->first();
 
         return view('Ventas.ticket', compact('venta', 'final_items', 'pagos', 'domicilio'));

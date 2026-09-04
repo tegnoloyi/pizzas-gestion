@@ -9,7 +9,7 @@ class TamanosRefrescosController extends Controller
 {
     /**
      * Mostrar la lista de tamaños de refresco.
-     * Tabla: 'TamanosRefrescos'.
+     * Tabla: 'tamanosrefrescos'.
      */
     public function index()
     {
@@ -26,7 +26,7 @@ class TamanosRefrescosController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'TamanosRefrescos'.
+     * Guardar en la tabla 'tamanosrefrescos'.
      */
     public function store(Request $request)
     {
@@ -58,7 +58,7 @@ class TamanosRefrescosController extends Controller
     }
 
     /**
-     * Actualizar registro en 'TamanosRefrescos'.
+     * Actualizar registro en 'tamanosrefrescos'.
      */
     public function update(Request $request, $id)
     {
@@ -76,7 +76,7 @@ class TamanosRefrescosController extends Controller
     }
 
     /**
-     * Eliminar registro de 'TamanosRefrescos'.
+     * Eliminar registro de 'tamanosrefrescos'.
      */
     public function destroy($id)
     {

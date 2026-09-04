@@ -160,7 +160,7 @@
                             if(isset($v->comentarios)) {
                                 $comentario = $v->comentarios;
                             } else {
-                                $comentario = \Illuminate\Support\Facades\DB::table('Venta')->where('id_venta', $v->id_venta ?? $v->id ?? 0)->value('comentarios') ?? '';
+                                $comentario = \Illuminate\Support\Facades\DB::table('venta')->where('id_venta', $v->id_venta ?? $v->id ?? 0)->value('comentarios') ?? '';
                             }
 
                             $comentarioUpper = strtoupper($comentario);

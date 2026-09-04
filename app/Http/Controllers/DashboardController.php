@@ -51,7 +51,7 @@ class DashboardController extends Controller
         $ventasHoy = (float)($queryVentas->sum('total') ?? 0);
         $numVentas = (int)($queryVentas->count());
         
-        // B. Desglose por Métodos: Leemos de la tabla 'Pago' unidos por 'id_caja'
+        // B. Desglose por Métodos: Leemos de la tabla 'pago' unidos por 'id_caja'
         $pagos = DB::table('pago')
             ->join('venta', 'pago.id_venta', '=', 'venta.id_venta')
             ->where('venta.id_caja', $id_caja)

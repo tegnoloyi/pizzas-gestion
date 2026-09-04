@@ -24,7 +24,7 @@ class GastosController extends Controller
             $gastos = DB::table('gastos')
                 ->join('empleados', 'gastos.id_emp', '=', 'empleados.id_emp')
                 ->where('gastos.id_caja', $cajaAbierta->id_caja)
-                ->select('Gastos.*', 'Empleados.nickName as responsable')
+                ->select('gastos.*', 'empleados.nickName as responsable')
                 ->orderBy('gastos.fecha', 'desc')
                 ->get();
         }

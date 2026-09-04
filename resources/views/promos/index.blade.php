@@ -24,7 +24,7 @@
         <!-- Formulario para agregar una nueva promoción -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Agregar Nueva Promoción</h2>
-            <form action="{{ route('promos.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <form action="{{ route('promociones.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 @csrf
                 <div>
                     <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la Promoción</label>
@@ -81,7 +81,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                     <!-- Botón Encender / Apagar -->
-                                    <form action="{{ route('promos.toggle', $promo->id) }}" method="POST" class="inline">
+                                    <form action="{{ route('promociones.toggle', $promo->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" class="px-3 py-1 text-xs rounded text-white {{ $promo->activa ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700' }}">
@@ -90,7 +90,7 @@
                                     </form>
 
                                     <!-- Botón Eliminar -->
-                                    <form action="{{ route('promos.destroy', $promo->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta promoción?');">
+                                    <form action="{{ route('promociones.destroy', $promo->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta promoción?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="px-3 py-1 text-xs rounded text-white bg-red-600 hover:bg-red-700">

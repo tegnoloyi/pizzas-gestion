@@ -9,7 +9,7 @@ class BarraController extends Controller
 {
     /**
      * Mostrar la lista de productos de la barra.
-     * Tablas corregidas: 'Barra', 'Especialidades' y 'CategoriasProd'.
+     * Tablas corregidas: 'barra', 'especialidades' y 'categoriasprod'.
      */
     public function index()
     {
@@ -39,7 +39,7 @@ class BarraController extends Controller
     }
 
     /**
-     * Guardar en la tabla 'Barra'.
+     * Guardar en la tabla 'barra'.
      */
     public function store(Request $request)
     {
@@ -76,7 +76,7 @@ class BarraController extends Controller
     }
 
     /**
-     * Actualizar registro en 'Barra'.
+     * Actualizar registro en 'barra'.
      */
     public function update(Request $request, $id)
     {
@@ -96,7 +96,7 @@ class BarraController extends Controller
     }
 
     /**
-     * Eliminar registro de 'Barra'.
+     * Eliminar registro de 'barra'.
      */
     public function destroy($id)
     {

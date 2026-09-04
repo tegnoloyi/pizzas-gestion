@@ -10,12 +10,12 @@ class EspecialidadesController extends Controller
     public function index()
     {
         $especialidades = DB::table('especialidades')->get();
-        return view('especialidades.index', compact('especialidades'));
+        return view('Especialidades.index', compact('especialidades'));
     }
 
     public function create()
     {
-        return view('especialidades.create');
+        return view('Especialidades.create');
     }
 
     public function store(Request $request)
@@ -36,7 +36,7 @@ class EspecialidadesController extends Controller
     public function edit($id)
     {
         $especialidad = DB::table('especialidades')->where('id_esp', $id)->first();
-        return view('especialidades.edit', compact('especialidad'));
+        return view('Especialidades.edit', compact('especialidad'));
     }
 
     public function update(Request $request, $id)

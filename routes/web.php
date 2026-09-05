@@ -196,6 +196,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permiso:promociones,gestionar')->group(function () {
         Route::resource('promociones', PromocionController::class);
         Route::patch('promociones/{id}/toggle', [PromocionController::class, 'toggle'])->name('promociones.toggle');
+        Route::patch('promociones/{id}/dias', [PromocionController::class, 'actualizarDias'])->name('promociones.dias');
     });
 
     // --- CONFIGURACIÓN ---

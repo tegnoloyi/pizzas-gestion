@@ -24,22 +24,37 @@
         <!-- Formulario para agregar una nueva promoción -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Agregar Nueva Promoción</h2>
-            <form action="{{ route('promociones.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <form action="{{ route('promociones.store') }}" method="POST" class="space-y-4">
                 @csrf
-                <div>
-                    <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la Promoción</label>
-                    <input type="text" name="nombre" id="nombre" required placeholder="Ej: 2x1 en Pizzas" 
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la Promoción</label>
+                        <input type="text" name="nombre" id="nombre" required placeholder="Ej: 2x1 en Pizzas" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    </div>
+
+                    <div>
+                        <label for="clave" class="block text-sm font-medium text-gray-700">Clave Interna (Opcional)</label>
+                        <input type="text" name="clave" id="clave" placeholder="Ej: pizza_2x1" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    </div>
                 </div>
 
                 <div>
-                    <label for="clave" class="block text-sm font-medium text-gray-700">Clave Interna (Opcional)</label>
-                    <input type="text" name="clave" id="clave" placeholder="Ej: promo_2x1" 
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Días automáticos (opcional)</label>
+                    <p class="text-xs text-gray-500 mb-2">Si marcas días, la promo se activa sola esos días sin tocar el switch. El switch manual sigue funcionando para prenderla/apagarla cualquier otro día.</p>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (['1' => 'Lunes', '2' => 'Martes', '3' => 'Miércoles', '4' => 'Jueves', '5' => 'Viernes', '6' => 'Sábado', '0' => 'Domingo'] as $valor => $etiqueta)
+                            <label class="inline-flex items-center gap-1.5 text-sm text-gray-700">
+                                <input type="checkbox" name="dias_semana[]" value="{{ $valor }}" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                {{ $etiqueta }}
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
 
                 <div>
-                    <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                         Guardar Promoción
                     </button>
                 </div>
@@ -55,11 +70,13 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clave</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Días automáticos</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado hoy</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
+                        @php $nombresDias = ['0' => 'Dom', '1' => 'Lun', '2' => 'Mar', '3' => 'Mié', '4' => 'Jue', '5' => 'Vie', '6' => 'Sáb']; @endphp
                         @forelse ($promociones as $promo)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -68,10 +85,25 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
                                     {{ $promo->clave }}
                                 </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    <form action="{{ route('promociones.dias', $promo->id) }}" method="POST" class="flex flex-wrap items-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        @foreach ($nombresDias as $valor => $etiqueta)
+                                            <label class="inline-flex items-center gap-1 text-xs">
+                                                <input type="checkbox" name="dias_semana[]" value="{{ $valor }}"
+                                                    {{ in_array((int) $valor, $promo->dias_semana ?? []) ? 'checked' : '' }}
+                                                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                                {{ $etiqueta }}
+                                            </label>
+                                        @endforeach
+                                        <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 underline">Guardar</button>
+                                    </form>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    @if ($promo->activa)
+                                    @if ($promo->estaActivaHoy())
                                         <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Activa
+                                            Activa {{ $promo->activa ? '(switch)' : '(por calendario)' }}
                                         </span>
                                     @else
                                         <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
@@ -101,7 +133,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
                                     No hay promociones creadas. Agrega una desde el formulario de arriba.
                                 </td>
                             </tr>

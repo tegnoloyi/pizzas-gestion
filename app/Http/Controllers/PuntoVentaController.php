@@ -83,7 +83,10 @@ class PuntoVentaController extends Controller
         try { $clientes = DB::table('clientes')->where('status', 1)->get(); $direcciones = DB::table('direcciones')->where('status', 1)->get(); } catch (\Exception $e) {}
         $magno_precio = DB::table('magno')->value('precio') ?? 0;
         $promo_2x1_activa = false;
-        try { $promo_2x1_activa = (bool) DB::table('promociones')->where('clave', 'pizza_2x1')->value('activa'); } catch (\Exception $e) {}
+        try {
+            $promo = \App\Models\Promocion::where('clave', 'pizza_2x1')->first();
+            $promo_2x1_activa = $promo ? $promo->estaActivaHoy() : false;
+        } catch (\Exception $e) {}
 
         $venta_edit = null;
         $cart_preloaded = [];
@@ -827,31 +830,6 @@ class PuntoVentaController extends Controller
         }
 
         return view('Ventas.ticket', compact('venta', 'final_items', 'pagos', 'domicilio'));
-    }
-
-    public function historial(Request $request)
-    {
-        $id_sucursal = 1; 
-        
-        $ventas = DB::table('venta')
-            ->leftJoin('pdomicilio', 'venta.id_venta', '=', 'pdomicilio.id_venta')
-            ->leftJoin('clientes', 'pdomicilio.id_clie', '=', 'clientes.id_clie')
-            ->where('venta.id_suc', $id_sucursal)
-            ->orderBy('venta.fecha_hora', 'desc')
-            ->select('venta.*', 'clientes.nombre as cnombre', 'clientes.apellido as capellido')
-            ->get();
-
-        foreach ($ventas as $v) {
-            $v->total_productos = DB::table('detalleventa')->where('id_venta', $v->id_venta)->sum('cantidad');
-            if ($v->tipo_servicio == 1) { $v->cliente_display = "Mesa " . $v->mesa . " - " . ($v->nombreClie ?? 'Sin Nombre'); } 
-            elseif ($v->tipo_servicio == 2) { $v->cliente_display = "Mostrador (Para Llevar)"; } 
-            else { $v->cliente_display = trim(($v->cnombre ?? '') . ' ' . ($v->capellido ?? '')); }
-        }
-
-        $filtroFecha = $request->fecha ?? 'todos';
-        $filtroEstado = $request->estado ?? 'todos';
-
-        return view('Ventas.historial', compact('ventas', 'filtroFecha', 'filtroEstado'));
     }
 
     public function cancelarPedido(Request $request)

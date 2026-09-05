@@ -655,14 +655,6 @@
                     this.modalPaq2 = false; 
                 },
 
-                addPaq3Esp(esp) { 
-                    if(this.paq3Pizzas.length < 3) this.paq3Pizzas.push(esp);
-                },
-                
-                removePaq3Esp(index) { 
-                    this.paq3Pizzas.splice(index, 1); 
-                },
-                
                 addPaq3(event = null) {
                     if (this.paq3Pizzas.length < 3) return alert("Por favor agrega las 3 pizzas al paquete.");
                     
@@ -754,43 +746,6 @@
                     this.actualizarCarrito();
                     this.animateToCart(event, 'Personalizada');
                     this.modalIngredientes = false;
-                },
-                precioPizzaIngredientes() { return !this.ingTam ? 0 : parseFloat(this.ingTam.precio); }, 
-                addIng() {
-                    let cTam = this.cleanSize(this.ingTam.tamano);
-                    let nomFull = 'Personalizada ' + cTam;
-                    let varFinal = '';
-                    let arrExtra = [];
-
-                    if(this.ingModo === 'completa') {
-                        varFinal = 'Ings: ' + this.ingSel.join(', ');
-                        arrExtra = this.ingSel;
-                    } else {
-                        let m1 = this.ingMitad1.length > 0 ? this.ingMitad1.join(', ') : 'QUESO';
-                        let m2 = this.ingMitad2.length > 0 ? this.ingMitad2.join(', ') : 'QUESO';
-                        varFinal = m1 + ' / ' + m2;
-                        arrExtra = [varFinal];
-                    }
-
-                    this.addPizzaToMainCart({ 
-                        db_id: this.ingTam.id_tamañop, 
-                        col: 'id_pizza', 
-                        tipo: 'piz_ing', 
-                        nombre_base: nomFull, 
-                        variante: varFinal, 
-                        precioBase: this.precioPizzaIngredientes(), 
-                        es_pizza: true, 
-                        is_magno: false, 
-                        orilla_queso: false, 
-                        precio_orilla: this.getPrecioOrilla(cTam), 
-                        ingredientes_extra: arrExtra 
-                    });
-                    
-                    this.modalIngredientes = false; 
-                    this.ingTam = null; 
-                    this.ingSel = [];
-                    this.ingMitad1 = [];
-                    this.ingMitad2 = [];
                 },
 
                 recalc() { this.actualizarCarrito(); },
@@ -1269,12 +1224,6 @@ procesarOrdenFinal(esAbierta = false) {
                     if(this.cart.length === 0) return alert('Agrega productos primero.');
                     this.espData.nombre = this.nombreClienteMesa;
                     this.modalEspecial = true;
-                },
-
-                getDireccionResumen() {
-                    if (!this.dirSeleccionada) return '';
-                    let dir = dbDirecciones.find(d => (d.id_direccion || d.id_dir) == this.dirSeleccionada);
-                    return dir ? `${dir.calle || dir.Calle}, Col. ${dir.colonia || dir.Colonia}` : '';
                 },
 
                 async confirmarEspecial() {

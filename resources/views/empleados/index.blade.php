@@ -29,7 +29,7 @@
     }
 </style>
 
-<div class="max-w-[1600px] mx-auto">
+<div x-data="{ mostrarModalEliminar: false, formAccion: '', nombreEmpleado: '' }" class="max-w-[1600px] mx-auto">
     
     <div class="mb-12">
         <h2 class="text-6xl font-black text-gray-900 italic tracking-tighter uppercase leading-[0.8]">Personal</h2>
@@ -159,19 +159,14 @@
                                 @endif
 
                                 @if(auth()->user()->tienePermiso('empleados','eliminar'))
-                                <form action="{{ route('empleados.destroy', $empleado->id_emp) }}" method="POST" 
-                                      onsubmit="return confirm('¿Estás SEGURO de eliminar a {{ $empleado->nombre }}? Esta acción no se puede deshacer.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    
-                                    <button type="submit" 
-                                            class="p-3 bg-white text-gray-400 hover:text-white hover:bg-black rounded-xl shadow-sm border border-gray-100 transition-all flex items-center justify-center"
-                                            title="Eliminar colaborador">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        @click="formAccion = '{{ route('empleados.destroy', $empleado->id_emp) }}'; nombreEmpleado = '{{ $empleado->nombre }}'; mostrarModalEliminar = true"
+                                        class="p-3 bg-white text-gray-400 hover:text-white hover:bg-black rounded-xl shadow-sm border border-gray-100 transition-all flex items-center justify-center"
+                                        title="Eliminar colaborador">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                                 @endif
 
                             </div>
@@ -193,6 +188,30 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div x-show="mostrarModalEliminar" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm p-8 overflow-hidden text-center" @click.away="mostrarModalEliminar = false" x-transition.scale.origin.bottom>
+            <div class="w-16 h-16 rounded-2xl bg-black mx-auto flex items-center justify-center mb-5">
+                <svg class="w-8 h-8 text-[#eab308]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-2 uppercase italic tracking-tighter">¿Eliminar a <span x-text="nombreEmpleado"></span>?</h3>
+            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-6">Esta acción no se puede deshacer</p>
+            <div class="flex gap-3">
+                <button @click="mostrarModalEliminar = false" type="button" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-black py-3.5 rounded-2xl transition-colors text-xs uppercase tracking-widest">
+                    Cancelar
+                </button>
+                <form :action="formAccion" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full bg-black hover:bg-gray-800 text-white font-black py-3.5 rounded-2xl transition-colors text-xs uppercase tracking-widest shadow-sm">
+                        Sí, Eliminar
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

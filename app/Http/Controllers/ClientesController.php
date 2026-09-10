@@ -140,7 +140,7 @@ class ClientesController extends Controller
             // 2. Actualizar cada dirección que se editó en el formulario
             if ($request->has('direcciones')) {
                 foreach ($request->direcciones as $id_dir => $dirData) {
-                    DB::table('direcciones')->where('id_dir', $id_dir)->update([
+                    DB::table('direcciones')->where('id_dir', $id_dir)->where('id_clie', $id)->update([
                         'calle'      => $dirData['calle'],
                         'manzana'    => $dirData['manzana'] ?? '',
                         'lote'       => $dirData['lote'] ?? '',

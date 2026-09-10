@@ -1,148 +1,205 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">Administración de Promociones</h1>
+<div x-data="{ mostrarModalEliminar: false, formAccion: '', nombrePromo: '' }" class="max-w-7xl mx-auto space-y-6">
 
-        @if (session('status'))
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('status') }}</span>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>• {{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <!-- Formulario para agregar una nueva promoción -->
-        <div class="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Agregar Nueva Promoción</h2>
-            <form action="{{ route('promociones.store') }}" method="POST" class="space-y-4">
-                @csrf
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la Promoción</label>
-                        <input type="text" name="nombre" id="nombre" required placeholder="Ej: 2x1 en Pizzas" 
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
-                    </div>
-
-                    <div>
-                        <label for="clave" class="block text-sm font-medium text-gray-700">Clave Interna (Opcional)</label>
-                        <input type="text" name="clave" id="clave" placeholder="Ej: pizza_2x1" 
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Días automáticos (opcional)</label>
-                    <p class="text-xs text-gray-500 mb-2">Si marcas días, la promo se activa sola esos días sin tocar el switch. El switch manual sigue funcionando para prenderla/apagarla cualquier otro día.</p>
-                    <div class="flex flex-wrap gap-3">
-                        @foreach (['1' => 'Lunes', '2' => 'Martes', '3' => 'Miércoles', '4' => 'Jueves', '5' => 'Viernes', '6' => 'Sábado', '0' => 'Domingo'] as $valor => $etiqueta)
-                            <label class="inline-flex items-center gap-1.5 text-sm text-gray-700">
-                                <input type="checkbox" name="dias_semana[]" value="{{ $valor }}" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                {{ $etiqueta }}
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div>
-                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
-                        Guardar Promoción
-                    </button>
-                </div>
-            </form>
+    <div class="flex justify-between items-center pb-4">
+        <div>
+            <h1 class="text-2xl font-black text-gray-800 tracking-tight">Promociones</h1>
+            <p class="text-sm text-gray-500 mt-1">Enciende promociones a mano o prográmalas por día de la semana</p>
         </div>
-
-        <!-- Tabla de Promociones -->
-        <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Promociones Registradas</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clave</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Días automáticos</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado hoy</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @php $nombresDias = ['0' => 'Dom', '1' => 'Lun', '2' => 'Mar', '3' => 'Mié', '4' => 'Jue', '5' => 'Vie', '6' => 'Sáb']; @endphp
-                        @forelse ($promociones as $promo)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ $promo->nombre }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
-                                    {{ $promo->clave }}
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500">
-                                    <form action="{{ route('promociones.dias', $promo->id) }}" method="POST" class="flex flex-wrap items-center gap-2">
-                                        @csrf
-                                        @method('PATCH')
-                                        @foreach ($nombresDias as $valor => $etiqueta)
-                                            <label class="inline-flex items-center gap-1 text-xs">
-                                                <input type="checkbox" name="dias_semana[]" value="{{ $valor }}"
-                                                    {{ in_array((int) $valor, $promo->dias_semana ?? []) ? 'checked' : '' }}
-                                                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                                {{ $etiqueta }}
-                                            </label>
-                                        @endforeach
-                                        <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 underline">Guardar</button>
-                                    </form>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    @if ($promo->estaActivaHoy())
-                                        <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Activa {{ $promo->activa ? '(switch)' : '(por calendario)' }}
-                                        </span>
-                                    @else
-                                        <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                            Inactiva
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <!-- Botón Encender / Apagar -->
-                                    <form action="{{ route('promociones.toggle', $promo->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="px-3 py-1 text-xs rounded text-white {{ $promo->activa ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700' }}">
-                                            {{ $promo->activa ? 'Desactivar' : 'Activar' }}
-                                        </button>
-                                    </form>
-
-                                    <!-- Botón Eliminar -->
-                                    <form action="{{ route('promociones.destroy', $promo->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta promoción?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="px-3 py-1 text-xs rounded text-white bg-red-600 hover:bg-red-700">
-                                            Eliminar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                                    No hay promociones creadas. Agrega una desde el formulario de arriba.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
+
+    @if (session('status'))
+        <div class="flex items-center gap-3 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-sm font-semibold text-green-800">{{ session('status') }}</p>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="flex items-start gap-3 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <ul class="text-sm font-semibold text-red-800 space-y-0.5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <!-- Formulario para agregar una nueva promoción -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <h2 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Agregar nueva promoción</h2>
+        <form action="{{ route('promociones.store') }}" method="POST" class="space-y-6">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label for="nombre" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombre de la promoción</label>
+                    <input type="text" name="nombre" id="nombre" required placeholder="Ej: 2x1 en Pizzas"
+                        class="block w-full rounded-lg border-gray-200 bg-gray-50 shadow-sm focus:border-amber-400 focus:ring-amber-400 focus:bg-white sm:text-sm p-3 border transition-colors">
+                </div>
+
+                <div>
+                    <label for="clave" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Clave interna (opcional)</label>
+                    <input type="text" name="clave" id="clave" placeholder="Ej: pizza_2x1"
+                        class="block w-full rounded-lg border-gray-200 bg-gray-50 shadow-sm focus:border-amber-400 focus:ring-amber-400 focus:bg-white sm:text-sm p-3 border font-mono transition-colors">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Días automáticos (opcional)</label>
+                <p class="text-xs text-gray-400 mb-3">Si marcas días, la promo se activa sola esos días sin tocar el switch. El switch manual sigue funcionando para prenderla o apagarla cualquier otro día.</p>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (['1' => 'Lunes', '2' => 'Martes', '3' => 'Miércoles', '4' => 'Jueves', '5' => 'Viernes', '6' => 'Sábado', '0' => 'Domingo'] as $valor => $etiqueta)
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="dias_semana[]" value="{{ $valor }}" class="peer sr-only">
+                            <span class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 bg-gray-50 peer-checked:bg-amber-500 peer-checked:border-amber-500 peer-checked:text-white transition-colors select-none">
+                                {{ $etiqueta }}
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Guardar promoción
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de Promociones -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <h2 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Promociones registradas</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-gray-400 uppercase text-[10px] tracking-widest font-bold border-b border-gray-100">
+                        <th class="px-6 py-4 font-semibold">Nombre</th>
+                        <th class="px-6 py-4 font-semibold">Clave</th>
+                        <th class="px-6 py-4 font-semibold">Días automáticos</th>
+                        <th class="px-6 py-4 font-semibold">Estado hoy</th>
+                        <th class="px-6 py-4 font-semibold text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-sm">
+                    @php $nombresDias = ['0' => 'D', '1' => 'L', '2' => 'M', '3' => 'M', '4' => 'J', '5' => 'V', '6' => 'S']; @endphp
+                    @forelse ($promociones as $promo)
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 text-gray-900 font-bold text-sm">
+                                {{ $promo->nombre }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                {{ $promo->clave }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <form action="{{ route('promociones.dias', $promo->id_promo) }}" method="POST" class="flex flex-wrap items-center gap-1.5">
+                                    @csrf
+                                    @method('PATCH')
+                                    @foreach ($nombresDias as $valor => $etiqueta)
+                                        <label class="cursor-pointer" title="{{ ['0'=>'Domingo','1'=>'Lunes','2'=>'Martes','3'=>'Miércoles','4'=>'Jueves','5'=>'Viernes','6'=>'Sábado'][$valor] }}">
+                                            <input type="checkbox" name="dias_semana[]" value="{{ $valor }}"
+                                                {{ in_array((int) $valor, $promo->dias_semana ?? []) ? 'checked' : '' }}
+                                                class="peer sr-only" onchange="this.closest('form').requestSubmit()">
+                                            <span class="w-6 h-6 inline-flex items-center justify-center rounded-md text-[10px] font-black border border-gray-200 text-gray-400 bg-gray-50 peer-checked:bg-amber-500 peer-checked:border-amber-500 peer-checked:text-white transition-colors select-none">
+                                                {{ $etiqueta }}
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                </form>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if ($promo->estaActivaHoy())
+                                    <span class="px-2.5 py-1 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest rounded-full bg-emerald-50 text-emerald-600">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        Activa {{ $promo->activa ? '· switch' : '· calendario' }}
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest rounded-full bg-gray-100 text-gray-400">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                                        Inactiva
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end items-center gap-2">
+                                    <!-- Switch encender/apagar -->
+                                    <form action="{{ route('promociones.toggle', $promo->id_promo) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit"
+                                            class="p-2.5 rounded-lg shadow-sm border transition-all flex items-center justify-center {{ $promo->activa ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100' : 'bg-white border-gray-100 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50' }}"
+                                            title="{{ $promo->activa ? 'Apagar switch manual' : 'Encender switch manual' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
+                                            </svg>
+                                        </button>
+                                    </form>
+
+                                    <!-- Eliminar -->
+                                    <button type="button"
+                                        @click="formAccion = '{{ route('promociones.destroy', $promo->id_promo) }}'; nombrePromo = '{{ $promo->nombre }}'; mostrarModalEliminar = true"
+                                        class="p-2.5 bg-white text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg shadow-sm border border-gray-100 transition-all flex items-center justify-center"
+                                        title="Eliminar promoción">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <span class="bg-gray-100 p-4 rounded-full">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
+                                    </span>
+                                    <p class="text-gray-400 text-sm">No hay promociones creadas. Agrega una desde el formulario de arriba.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div x-show="mostrarModalEliminar" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" x-transition.opacity>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 overflow-hidden text-center" @click.away="mostrarModalEliminar = false" x-transition.scale.origin.bottom>
+            <div class="w-16 h-16 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-2 tracking-tight">¿Eliminar <span x-text="nombrePromo"></span>?</h3>
+            <p class="text-gray-500 text-sm mb-6">Esta acción no se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button @click="mostrarModalEliminar = false" type="button" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-xl transition-colors text-sm">
+                    Cancelar
+                </button>
+                <form :action="formAccion" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-sm">
+                        Sí, Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection

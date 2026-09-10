@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
     html.app-dark .orders-route-panel {
         background-color: #182235 !important;

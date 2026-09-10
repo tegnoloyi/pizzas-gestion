@@ -1,5 +1,5 @@
 /**
- * pos.js — Lógica del Punto de Venta (Sistema Pizzetos)
+ * pos.js — Lógica del Punto de Venta (Sistema Pizzero)
  *
  * Este archivo depende de dos cosas que se cargan ANTES que este script,
  * inyectadas desde resources/views/Ventas/pos.blade.php:
@@ -516,7 +516,7 @@
 
                 abrirRectangularGeneral() {
                     let baseItem = dbDirectos.find(d => d.cat === 11);
-                    if(!baseItem) return alert('No hay pizzas rectangulares configuradas en la base de datos.');
+                    if(!baseItem) return showToast('No hay pizzas rectangulares configuradas en la base de datos.');
                     this.rectItem = { id: baseItem.id, col: baseItem.col, nombre: 'Pizza Rectangular', precio: baseItem.precio };
                     this.rectSel = [];
                     this.showIngs = false; 
@@ -557,7 +557,7 @@
 
                 abrirBarraGeneral() {
                     let baseItem = dbDirectos.find(d => d.cat === 10);
-                    if(!baseItem) return alert('No hay pizzas de barra configuradas en la base de datos.');
+                    if(!baseItem) return showToast('No hay pizzas de barra configuradas en la base de datos.');
                     this.barraItem = { id: baseItem.id, col: baseItem.col, nombre: 'Pizza de Barra', precio: baseItem.precio };
                     this.barraSel = [];
                     this.showIngs = false; 
@@ -632,10 +632,10 @@
                 addPaq1(event = null) {
                     let pizzasFinales = [];
                     if(this.paq1MitadesMode) {
-                        if(this.paq1Halves.length < 4) return alert("Por favor selecciona las 4 mitades.");
+                        if(this.paq1Halves.length < 4) return showToast("Por favor selecciona las 4 mitades.");
                         pizzasFinales = [{nombre: this.paq1Halves[0] + ' / ' + this.paq1Halves[1], orilla: false}, {nombre: this.paq1Halves[2] + ' / ' + this.paq1Halves[3], orilla: false}];
                     } else {
-                        if(this.paq1Pizzas.length < 2) return alert("Por favor selecciona las 2 pizzas completas.");
+                        if(this.paq1Pizzas.length < 2) return showToast("Por favor selecciona las 2 pizzas completas.");
                         pizzasFinales = this.paq1Pizzas.map(p => ({nombre: p, orilla: false}));
                     }
                     this.addPaq(1, pizzasFinales, '', event);
@@ -656,7 +656,7 @@
                 },
 
                 addPaq3(event = null) {
-                    if (this.paq3Pizzas.length < 3) return alert("Por favor agrega las 3 pizzas al paquete.");
+                    if (this.paq3Pizzas.length < 3) return showToast("Por favor agrega las 3 pizzas al paquete.");
                     
                     let pizzasFinales = this.paq3Pizzas.map(p => ({nombre: p, orilla: false}));
                     
@@ -979,10 +979,10 @@
 
                 procesarOrden() {
                     if(this.servicio === 1) {
-                        if(!this.mesa || !this.nombreClienteMesa.trim()) return alert("El número de mesa y el nombre del cliente son obligatorios.");
+                        if(!this.mesa || !this.nombreClienteMesa.trim()) return showToast("El número de mesa y el nombre del cliente son obligatorios.");
                         this.procesarOrdenFinal(true); 
                     } else if(this.servicio === 2) {
-                        if(!this.nombreClienteMesa.trim()) return alert("El nombre del cliente es obligatorio para llevar.");
+                        if(!this.nombreClienteMesa.trim()) return showToast("El nombre del cliente es obligatorio para llevar.");
                         this.abrirModalPago(); 
                     } else if(this.servicio === 3) {
                         if (this.id_venta_edit && this.domicilioPrevio) {
@@ -1147,11 +1147,11 @@ procesarOrdenFinal(esAbierta = false) {
             this.modalAdminPass = true;
             this.isProcessing = false;
         } else {
-            alert("Error al guardar: " + res.message);
+            showToast("Error al guardar: " + res.message);
             this.isProcessing = false;
         }
     }).catch(e => {
-        alert("Ocurrió un error. Intenta de nuevo.\n" + e.message);
+        showToast("Ocurrió un error. Intenta de nuevo. " + e.message);
         this.isProcessing = false;
     });
 },
@@ -1221,7 +1221,7 @@ procesarOrdenFinal(esAbierta = false) {
                 },
 
                 abrirModalEspecial() {
-                    if(this.cart.length === 0) return alert('Agrega productos primero.');
+                    if(this.cart.length === 0) return showToast('Agrega productos primero.');
                     this.espData.nombre = this.nombreClienteMesa;
                     this.modalEspecial = true;
                 },
@@ -1285,17 +1285,17 @@ procesarOrdenFinal(esAbierta = false) {
                             const w = 420; const h = 700; const l = (window.screen.width/2)-(w/2); const t = (window.screen.height/2)-(h/2);
                             window.open(urlTicket, 'TicketEspecial', `width=${w},height=${h},left=${l},top=${t},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes`);
 
-                            alert("¡Pedido Especial # " + res.id_venta + (this.id_venta_edit ? " Actualizado!" : " Guardado!"));
+                            showToast("Pedido Especial #" + res.id_venta + (this.id_venta_edit ? " actualizado" : " guardado"), 'success');
                             if(this.id_venta_edit) {
                                 window.location.href = window.posConfig.routes.especialesIndex;
                             } else {
                                 window.location.reload(); 
                             }
                         } else {
-                            alert("Error: " + res.message);
+                            showToast("Error: " + res.message);
                         }
                     } catch (e) {
-                        alert("Error de conexión");
+                        showToast("Error de conexión");
                     } finally {
                         this.isProcessing = false;
                     }

@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
         <div>
             <h2 class="text-2xl font-black text-gray-800 tracking-tight">Sucursales</h2>
-            <p class="text-sm text-gray-500 mt-1">Gestiona las diferentes sucursales de Pizzetos</p>
+            <p class="text-sm text-gray-500 mt-1">Gestiona las diferentes sucursales de Sistema Pizzero</p>
         </div>
         <a href="{{ route('sucursales.create') }}" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg> Agregar Sucursal

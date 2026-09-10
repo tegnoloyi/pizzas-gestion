@@ -30,7 +30,7 @@ class FlujoCajaController extends Controller
         }
 
         // GENERAR FOLIO VIRTUAL DE CAJA SIN FECHA (Ej: 00012)
-        $cajaAbierta->folio_virtual = str_pad($cajaAbierta->id_caja, STR_PAD_LEFT);
+        $cajaAbierta->folio_virtual = str_pad($cajaAbierta->id_caja, 5, '0', STR_PAD_LEFT);
 
         // 1. GASTOS DETALLADOS
         try {
@@ -81,7 +81,7 @@ class FlujoCajaController extends Controller
             ->get();
 
         foreach($ventas_detalle as $v) {
-            $v->folio_virtual = str_pad($v->id_venta, 5, STR_PAD_LEFT);
+            $v->folio_virtual = str_pad($v->id_venta, 5, '0', STR_PAD_LEFT);
         }
 
         // 3. TOTALES POR MÉTODO
@@ -94,7 +94,9 @@ class FlujoCajaController extends Controller
             ->groupBy('metodospago.metodo')
             ->pluck('total_monto', 'metodo');
 
-        $tickets_validos = $ventas_detalle->where('status', '!=', 3);
+        // Solo ventas cobradas (status=1) cuentan como venta real del turno.
+        // status=0 = mesa abierta / aún sin cobrar, status=3 = cancelada.
+        $tickets_validos = $ventas_detalle->where('status', 1);
         $stats = [
             'num_ventas' => $tickets_validos->count(),
             'num_pedidos' => $tickets_validos->count(),
@@ -122,7 +124,7 @@ class FlujoCajaController extends Controller
 
         if (!$caja) abort(404);
 
-        $caja->folio_virtual = str_pad($caja->id_caja, 5, STR_PAD_LEFT);
+        $caja->folio_virtual = str_pad($caja->id_caja, 5, '0', STR_PAD_LEFT);
 
         try {
             $gastos = DB::table('gastos')
@@ -167,7 +169,7 @@ class FlujoCajaController extends Controller
             ->get();
 
         foreach($ventas as $v) {
-            $v->folio_virtual = str_pad($v->id_venta, STR_PAD_LEFT);
+            $v->folio_virtual = str_pad($v->id_venta, 5, '0', STR_PAD_LEFT);
         }
 
         $pagos_pdf = DB::table('pago')
@@ -180,8 +182,8 @@ class FlujoCajaController extends Controller
 
         $stats = [
             'fondo' => $caja->monto_inicial,
-            'num_ventas' => $ventas->where('status', '!=', 3)->count(),
-            'venta_total' => $ventas->where('status', '!=', 3)->sum('total'),
+            'num_ventas' => $ventas->where('status', 1)->count(),
+            'venta_total' => $ventas->where('status', 1)->sum('total'),
             'total_gastos' => $gastos->sum('precio'),
             'efectivo' => $pagos_pdf['Efectivo'] ?? 0,
             'tarjeta' => $pagos_pdf['Tarjeta'] ?? 0,
@@ -207,7 +209,7 @@ class FlujoCajaController extends Controller
             ->paginate(15);
 
         foreach($cajas as $c) {
-            $c->folio_virtual = str_pad($c->id_caja, STR_PAD_LEFT);
+            $c->folio_virtual = str_pad($c->id_caja, 5, '0', STR_PAD_LEFT);
         }
 
         return view('Ventas.historial_cajas', compact('cajas'));

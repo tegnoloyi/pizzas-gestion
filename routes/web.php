@@ -37,7 +37,7 @@ use App\Http\Controllers\PromocionController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Sistema Pizzetos
+| Web Routes - Sistema Pizzero
 |--------------------------------------------------------------------------
 */
 

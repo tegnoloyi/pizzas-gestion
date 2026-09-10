@@ -68,7 +68,7 @@
     @endphp
 
     <div class="text-center mb-1">
-        <img src="{{ asset('pizzetos.png') }}" alt="Pizzetos Logo" class="ticket-logo">
+        <img src="{{ asset('pizzetos.png') }}" alt="Sistema Pizzero Logo" class="ticket-logo">
         
         <div style="font-size: 12px;">TICKET DE VENTA</div>
         

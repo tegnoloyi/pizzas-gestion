@@ -223,12 +223,9 @@
                                     </td>
                                     <td class="px-5 py-3 text-right gastos-table__amount">-${{ number_format($gasto->precio, 2) }}</td>
                                     <td class="px-5 py-3 text-right">
-                                        <form action="{{ route('gastos.destroy', $gasto->id_gastos) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este gasto?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="gastos-table__action-btn inline-flex items-center justify-center text-gray-400 rounded-md p-1.5" title="Eliminar Gasto">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="confirmarEliminarGasto('{{ route('gastos.destroy', $gasto->id_gastos) }}', '{{ addslashes($gasto->descripcion) }}')" class="gastos-table__action-btn inline-flex items-center justify-center text-gray-400 rounded-md p-1.5" title="Eliminar Gasto">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -271,11 +268,39 @@
     </div>
 </div>
 
+<!-- Modal de confirmación para eliminar gasto -->
+<div id="modal-eliminar-gasto" class="modal-gasto">
+    <div class="modal-gasto__overlay" onclick="toggleModal('modal-eliminar-gasto')"></div>
+    <div class="modal-gasto__panel p-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+        <h3 class="text-lg font-black text-gray-900 mb-2">¿Eliminar este gasto?</h3>
+        <p class="text-gray-500 text-sm mb-6" id="texto-gasto-a-eliminar"></p>
+        <div class="flex gap-3">
+            <button type="button" onclick="toggleModal('modal-eliminar-gasto')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-xl transition-colors text-sm">Cancelar</button>
+            <form id="form-eliminar-gasto" method="POST" class="flex-1">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-sm">Sí, Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleModal(id) {
     const modal = document.getElementById(id);
     if (!modal) return;
     modal.classList.toggle('active');
+}
+
+function confirmarEliminarGasto(url, descripcion) {
+    document.getElementById('form-eliminar-gasto').action = url;
+    document.getElementById('texto-gasto-a-eliminar').textContent = 'Se eliminará "' + descripcion + '" permanentemente. Esta acción no se puede deshacer.';
+    toggleModal('modal-eliminar-gasto');
 }
 </script>
 @endsection

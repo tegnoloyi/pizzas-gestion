@@ -92,7 +92,9 @@ class PedidosEspecialesController extends Controller
                     'id_clie' => $id_clie,
                     'fecha_entrega' => $request->fecha_entrega,
                     // Sumamos el nuevo anticipo al registro visual de control
-                    'anticipo' => DB::raw("anticipo + " . ($request->anticipo ?? 0))
+                    // Sumamos el nuevo anticipo al registro visual de control.
+                    // Nunca concatenar $request directo dentro de DB::raw() -> inyección SQL.
+                    'anticipo' => DB::raw("anticipo + " . floatval($request->anticipo ?? 0))
                 ]);
                 
                 // Borramos los detalles viejos para insertar los nuevos del carrito
@@ -173,6 +175,19 @@ class PedidosEspecialesController extends Controller
     {
         try {
             DB::beginTransaction();
+
+            // Verificamos que el pedido especial enviado en el body realmente
+            // pertenezca a la venta $id de la URL, para no cobrar/entregar el pedido equivocado.
+            $pespecial = DB::table('pespeciales')
+                ->where('id_pespeciales', $request->id_pespeciales)
+                ->where('id_venta', $id)
+                ->first();
+
+            if (!$pespecial) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'El pedido especial no corresponde a esta venta.'], 422);
+            }
+
             if ($request->monto_cobrado > 0) {
                 DB::table('pago')->insert([
                     'id_venta' => $id, 'monto' => $request->monto_cobrado,

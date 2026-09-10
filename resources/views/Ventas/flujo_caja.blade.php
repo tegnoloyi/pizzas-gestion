@@ -385,7 +385,7 @@
                             </div>
                         </div>
 
-                        <button type="button" @click="if(contado !== '') { modal = true } else { alert('Ingresa el monto contado.') }" class="pizzetos-btn w-full shadow-xl shadow-amber-200 py-6 text-xl">
+                        <button type="button" @click="if(contado !== '') { modal = true } else { showToast('Ingresa el monto contado.') }" class="pizzetos-btn w-full shadow-xl shadow-amber-200 py-6 text-xl">
                             Cerrar Caja y Turno
                         </button>
                         

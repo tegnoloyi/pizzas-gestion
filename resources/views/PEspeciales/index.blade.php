@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
     [x-cloak] { display: none !important; }
 </style>
@@ -250,11 +249,11 @@
                         this.imprimirTicket(this.pedidoActual.id_venta);
                         setTimeout(() => { window.location.reload(); }, 1000);
                     } else {
-                        alert("Error: " + res.message);
+                        showToast("Error: " + res.message);
                         this.isProcessing = false;
                     }
                 } catch (e) {
-                    alert("Error de red");
+                    showToast("Error de red");
                     this.isProcessing = false;
                 }
             },
@@ -284,11 +283,11 @@
                         this.imprimirTicket(res.id_venta);
                         setTimeout(() => { window.location.reload(); }, 1500);
                     } else {
-                        alert("Error: " + res.message);
+                        showToast("Error: " + res.message);
                         this.isProcessing = false;
                     }
                 } catch (e) {
-                    alert("Error de red");
+                    showToast("Error de red");
                     this.isProcessing = false;
                 }
             }

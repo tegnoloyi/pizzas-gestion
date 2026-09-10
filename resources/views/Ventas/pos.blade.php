@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
 .custom-scroll::-webkit-scrollbar {
     width: 6px;

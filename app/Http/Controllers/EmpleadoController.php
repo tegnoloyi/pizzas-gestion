@@ -30,10 +30,10 @@ class EmpleadoController extends Controller
         // Aseguramos que id_ca e id_suc apunten a las tablas correctas.
         $request->validate([
             'nombre'    => 'required|string|max:255',
-            'nickName'  => 'required|string|unique:Empleados,nickName',
+            'nickName'  => 'required|string|unique:empleados,nickName',
             'telefono'  => 'required',
-            'id_ca'     => 'required|exists:Cargos,id_ca', 
-            'id_suc'    => 'required|exists:Sucursal,id_suc',
+            'id_ca'     => 'required|exists:cargos,id_ca', 
+            'id_suc'    => 'required|exists:sucursal,id_suc',
             'password'  => 'required|string|min:6',
         ]);
         
@@ -43,7 +43,8 @@ class EmpleadoController extends Controller
             $empleado->direccion = $request->direccion ?? ''; // Existe en tu SQL
             $empleado->nickName  = $request->nickName;
             $empleado->telefono  = $request->telefono;
-            $empleado->id_ca     = $request->id_ca; 
+            // Blindaje: solo un Admin puede asignar el cargo (id_ca=1 = Admin).
+            $empleado->id_ca     = auth()->user()->id_ca == 1 ? $request->id_ca : 2;
             $empleado->id_suc    = $request->id_suc;
             $empleado->status    = 1; 
             $empleado->password  = Hash::make($request->password);
@@ -73,9 +74,9 @@ class EmpleadoController extends Controller
         $request->validate([
             'nombre'   => 'required|string|max:255',
             'telefono' => 'required',
-            'id_ca'    => 'required|exists:Cargos,id_ca',
-            'id_suc'   => 'required|exists:Sucursal,id_suc',
-            'nickName' => 'required|string|unique:Empleados,nickName,' . $id . ',id_emp',
+            'id_ca'    => 'required|exists:cargos,id_ca',
+            'id_suc'   => 'required|exists:sucursal,id_suc',
+            'nickName' => 'required|string|unique:empleados,nickName,' . $id . ',id_emp',
             'password' => 'nullable|string|min:6',
         ]);
 
@@ -86,7 +87,10 @@ class EmpleadoController extends Controller
             $empleado->direccion = $request->direccion ?? '';
             $empleado->nickName  = $request->nickName;
             $empleado->telefono  = $request->telefono;
-            $empleado->id_ca     = $request->id_ca; 
+            // Blindaje: solo un Admin puede reasignar el cargo de otro empleado.
+            if (auth()->user()->id_ca == 1) {
+                $empleado->id_ca = $request->id_ca;
+            }
             $empleado->id_suc    = $request->id_suc;
 
             if ($request->filled('password')) {

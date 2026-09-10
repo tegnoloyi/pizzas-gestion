@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizzetos - Iniciar Sesión</title>
+    <title>Sistema Pizzero - Iniciar Sesión</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -15,7 +15,7 @@
             {{-- Logo --}}
             <div class="text-center mb-8">
                 <img src="{{ asset('pizzetos.png') }}"
-                     alt="Pizzetos Logo"
+                     alt="Sistema Pizzero Logo"
                      class="h-14 mx-auto mb-4 object-contain">
 
                 <h1 class="text-2xl font-bold text-gray-800">
@@ -74,7 +74,7 @@
             {{-- Footer --}}
             <div class="mt-8 text-center">
                 <p class="text-xs text-gray-400">
-                    Pizzetos &copy; {{ date('Y') }}
+                    Sistema Pizzero &copy; {{ date('Y') }}
                 </p>
             </div>
 

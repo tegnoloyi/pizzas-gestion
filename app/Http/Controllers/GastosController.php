@@ -64,6 +64,20 @@ class GastosController extends Controller
 
     public function destroy($id)
     {
+        $id_suc = 1;
+        $cajaAbierta = DB::table('caja')->where('status', 1)->where('id_suc', $id_suc)->first();
+
+        $gasto = DB::table('gastos')->where('id_gastos', $id)->first();
+        if (!$gasto) {
+            return back()->with('error', 'Gasto no encontrado.');
+        }
+
+        // Solo se puede borrar un gasto si pertenece a la caja actualmente abierta.
+        // Evita alterar retroactivamente un corte ya cerrado.
+        if (!$cajaAbierta || $gasto->id_caja != $cajaAbierta->id_caja) {
+            return back()->with('error', 'No se puede eliminar un gasto de una caja ya cerrada.');
+        }
+
         DB::table('gastos')->where('id_gastos', $id)->delete();
         return back()->with('success', 'Gasto eliminado.');
     }

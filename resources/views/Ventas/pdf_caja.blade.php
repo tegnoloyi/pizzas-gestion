@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cierre de Caja - Pizzetos</title>
+    <title>Cierre de Caja - Sistema Pizzero</title>
     <style>
         body { 
             font-family: Arial, Helvetica, sans-serif; 

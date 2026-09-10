@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
     [x-cloak] { display: none !important; }
     
@@ -617,7 +616,7 @@
                 },
 
                 procesarCancelacion() {
-                    if(!this.motivo_cancelacion.trim()) return alert("Ingresa el motivo.");
+                    if(!this.motivo_cancelacion.trim()) return showToast("Ingresa el motivo.");
                     fetch("{{ route('ventas.cancelar') }}", {
                         method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                         body: JSON.stringify({ 
@@ -633,7 +632,7 @@
                             this.admin_password_cancelar = '';
                             this.adminPassErrorCancelar = res.message;
                         } else { 
-                            alert("Error: " + res.message); 
+                            showToast("Error: " + res.message); 
                         }
                     });
                 },
@@ -769,7 +768,7 @@
                             this.adminPassErrorPago = res.message;
                             this.isProcessing = false;
                         } else { 
-                            alert("Error: " + res.message); 
+                            showToast("Error: " + res.message); 
                             this.isProcessing = false;
                         }
                     });

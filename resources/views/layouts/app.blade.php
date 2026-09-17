@@ -27,6 +27,7 @@
         })();
     </script>
     
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
@@ -923,7 +924,7 @@
     <div x-data
          x-init="
             window.showToast = (mensaje, tipo = 'error') => {
-                console.log('[Toast disparado] tipo=' + tipo + ' | mensaje=' + mensaje, new Error().stack);
+                if (!mensaje || mensaje === 'undefined' || String(mensaje).trim() === '') return;
                 $store.toasts.items.push({ id: Date.now() + Math.random(), mensaje, tipo });
                 setTimeout(() => { $store.toasts.items.shift(); }, 4000);
             }

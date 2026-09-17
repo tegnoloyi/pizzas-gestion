@@ -923,27 +923,31 @@
     <div x-data
          x-init="
             window.showToast = (mensaje, tipo = 'error') => {
+                console.log('[Toast disparado] tipo=' + tipo + ' | mensaje=' + mensaje, new Error().stack);
                 $store.toasts.items.push({ id: Date.now() + Math.random(), mensaje, tipo });
                 setTimeout(() => { $store.toasts.items.shift(); }, 4000);
             }
          "
          class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm pointer-events-none">
         <template x-for="t in $store.toasts.items" :key="t.id">
-            <div x-show="true" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-4"
-                 x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-200"
+            <div x-show="true" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-4 scale-95"
+                 x-transition:enter-end="opacity-100 translate-x-0 scale-100" x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                 class="pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-lg border text-sm font-semibold"
-                 :class="t.tipo === 'error' ? 'bg-red-50 border-red-200 text-red-800' : (t.tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-amber-50 border-amber-200 text-amber-800')">
-                <svg x-show="t.tipo === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <svg x-show="t.tipo === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <svg x-show="t.tipo === 'aviso'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span x-text="t.mensaje"></span>
+                 class="pointer-events-auto flex items-center gap-3 p-4 rounded-xl shadow-xl border-l-4 bg-white text-sm font-bold"
+                 :class="t.tipo === 'error' ? 'border-red-500' : (t.tipo === 'success' ? 'border-emerald-500' : 'border-amber-500')">
+                <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                      :class="t.tipo === 'error' ? 'bg-red-50' : (t.tipo === 'success' ? 'bg-emerald-50' : 'bg-amber-50')">
+                    <svg x-show="t.tipo === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <svg x-show="t.tipo === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <svg x-show="t.tipo === 'aviso'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </span>
+                <span class="text-gray-700" x-text="t.mensaje"></span>
             </div>
         </template>
     </div>

@@ -14,6 +14,7 @@
     </div>
 
     <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-slate-50 border-b border-slate-100">
@@ -64,6 +65,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
 
         @if($cajas->isEmpty())
             <div class="py-20 text-center">

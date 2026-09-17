@@ -19,6 +19,7 @@
 <div x-data="{ 
         mostrarModalEstado: false, formAccionEstado: '', accionTexto: '', colorBoton: '',
         mostrarModalDirecciones: false, formAccionDireccion: '',
+        mostrarModalEliminarDir: false, formAccionEliminarDir: '',
         clienteActivo: '', clienteId: null, direccionesActivas: [],
         
         /* VARIABLE PARA LA BÚSQUEDA EN TIEMPO REAL */
@@ -213,10 +214,7 @@
                 <div class="space-y-3 max-h-48 overflow-y-auto mb-6 pr-2">
                     <template x-for="dir in direccionesActivas" :key="dir.id_dir">
                         <div class="border rounded-md p-4 relative bg-gray-50">
-                            <form :action="'/direcciones/' + dir.id_dir" method="POST" class="absolute top-4 right-4">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700" title="Eliminar Dirección"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg></button>
-                            </form>
+                            <button type="button" @click="formAccionEliminarDir = '/direcciones/' + dir.id_dir; mostrarModalEliminarDir = true" class="absolute top-4 right-4 text-red-500 hover:text-red-700" title="Eliminar Dirección"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg></button>
                             <p class="text-sm text-gray-800" x-text="dir.calle"></p>
                             <p class="text-xs text-gray-500 mt-1">Manzana: <span x-text="dir.manzana"></span> • Lote: <span x-text="dir.lote"></span></p>
                             <p class="text-xs text-gray-500">Colonia: <span x-text="dir.colonia"></span></p>
@@ -256,6 +254,31 @@
                         <button type="button" @click="mostrarModalDirecciones = false" class="bg-gray-500 text-white px-4 py-2 rounded font-bold text-sm">Cerrar</button>
                         <button type="submit" class="bg-amber-500 text-white px-4 py-2 rounded font-bold text-sm">Agregar Dirección</button>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar una dirección -->
+    <div x-show="mostrarModalEliminarDir" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" x-transition.opacity>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 overflow-hidden text-center" @click.away="mostrarModalEliminarDir = false" x-transition.scale.origin.bottom>
+            <div class="w-16 h-16 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-2 tracking-tight">¿Eliminar esta dirección?</h3>
+            <p class="text-gray-500 text-sm mb-6">Esta acción no se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button @click="mostrarModalEliminarDir = false" type="button" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-xl transition-colors text-sm">
+                    Cancelar
+                </button>
+                <form :action="formAccionEliminarDir" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-sm">
+                        Sí, Eliminar
+                    </button>
                 </form>
             </div>
         </div>

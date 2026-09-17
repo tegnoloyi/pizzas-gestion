@@ -3,10 +3,20 @@
 @section('content')
 <div x-data="{ mostrarModalEliminar: false, formAccion: '', nombrePromo: '' }" class="max-w-7xl mx-auto space-y-6">
 
-    <div class="flex justify-between items-center pb-4">
-        <div>
-            <h1 class="text-2xl font-black text-gray-800 tracking-tight">Promociones</h1>
-            <p class="text-sm text-gray-500 mt-1">Enciende promociones a mano o prográmalas por día de la semana</p>
+    <!-- Encabezado con gradiente -->
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 p-8 shadow-lg">
+        <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10"></div>
+        <div class="absolute -right-2 -bottom-10 w-32 h-32 rounded-full bg-white/10"></div>
+        <div class="relative flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black text-white tracking-tight">Promociones</h1>
+                <p class="text-sm text-amber-50 mt-0.5">Enciende promociones a mano o prográmalas por día de la semana</p>
+            </div>
         </div>
     </div>
 
@@ -32,9 +42,58 @@
         </div>
     @endif
 
+    <!-- Tarjetas de resumen -->
+    @php
+        $totalPromos = $promociones->count();
+        $activasHoy = $promociones->filter(fn($p) => $p->estaActivaHoy())->count();
+        $porCalendario = $promociones->filter(fn($p) => $p->estaActivaHoy() && !$p->activa)->count();
+    @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-2xl font-black text-gray-800 leading-none">{{ $totalPromos }}</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Registradas</p>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-2xl font-black text-emerald-600 leading-none">{{ $activasHoy }}</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Activas hoy</p>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-2xl font-black text-amber-600 leading-none">{{ $porCalendario }}</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Por calendario hoy</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Formulario para agregar una nueva promoción -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-        <h2 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Agregar nueva promoción</h2>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+            </div>
+            <h2 class="text-sm font-black text-gray-800 uppercase tracking-widest">Agregar nueva promoción</h2>
+        </div>
         <form action="{{ route('promociones.store') }}" method="POST" class="space-y-6">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -58,7 +117,7 @@
                     @foreach (['1' => 'Lunes', '2' => 'Martes', '3' => 'Miércoles', '4' => 'Jueves', '5' => 'Viernes', '6' => 'Sábado', '0' => 'Domingo'] as $valor => $etiqueta)
                         <label class="cursor-pointer">
                             <input type="checkbox" name="dias_semana[]" value="{{ $valor }}" class="peer sr-only">
-                            <span class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 bg-gray-50 peer-checked:bg-amber-500 peer-checked:border-amber-500 peer-checked:text-white transition-colors select-none">
+                            <span class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold border-2 border-gray-200 text-gray-500 bg-gray-50 peer-checked:bg-gradient-to-br peer-checked:from-amber-500 peer-checked:to-orange-500 peer-checked:border-amber-500 peer-checked:text-white peer-checked:shadow-md transition-all select-none">
                                 {{ $etiqueta }}
                             </span>
                         </label>
@@ -67,7 +126,7 @@
             </div>
 
             <div>
-                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
+                <button type="submit" class="bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-6 py-3 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
@@ -79,11 +138,18 @@
 
     <!-- Tabla de Promociones -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-        <h2 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Promociones registradas</h2>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+            </div>
+            <h2 class="text-sm font-black text-gray-800 uppercase tracking-widest">Promociones registradas</h2>
+        </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="text-gray-400 uppercase text-[10px] tracking-widest font-bold border-b border-gray-100">
+                    <tr class="text-gray-400 uppercase text-[10px] tracking-widest font-bold border-b-2 border-gray-100">
                         <th class="px-6 py-4 font-semibold">Nombre</th>
                         <th class="px-6 py-4 font-semibold">Clave</th>
                         <th class="px-6 py-4 font-semibold">Días automáticos</th>
@@ -94,9 +160,16 @@
                 <tbody class="divide-y divide-gray-50 text-sm">
                     @php $nombresDias = ['0' => 'D', '1' => 'L', '2' => 'M', '3' => 'M', '4' => 'J', '5' => 'V', '6' => 'S']; @endphp
                     @forelse ($promociones as $promo)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 text-gray-900 font-bold text-sm">
-                                {{ $promo->nombre }}
+                        <tr class="hover:bg-amber-50/40 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br {{ $promo->estaActivaHoy() ? 'from-amber-400 to-orange-500' : 'from-gray-200 to-gray-300' }} flex items-center justify-center shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-900 font-bold text-sm">{{ $promo->nombre }}</span>
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-gray-400 font-mono text-xs">
                                 {{ $promo->clave }}
@@ -110,7 +183,7 @@
                                             <input type="checkbox" name="dias_semana[]" value="{{ $valor }}"
                                                 {{ in_array((int) $valor, $promo->dias_semana ?? []) ? 'checked' : '' }}
                                                 class="peer sr-only" onchange="this.closest('form').requestSubmit()">
-                                            <span class="w-6 h-6 inline-flex items-center justify-center rounded-md text-[10px] font-black border border-gray-200 text-gray-400 bg-gray-50 peer-checked:bg-amber-500 peer-checked:border-amber-500 peer-checked:text-white transition-colors select-none">
+                                            <span class="w-6 h-6 inline-flex items-center justify-center rounded-md text-[10px] font-black border-2 border-gray-200 text-gray-400 bg-gray-50 peer-checked:bg-gradient-to-br peer-checked:from-amber-500 peer-checked:to-orange-500 peer-checked:border-amber-500 peer-checked:text-white peer-checked:shadow-sm transition-all select-none">
                                                 {{ $etiqueta }}
                                             </span>
                                         </label>
@@ -119,12 +192,12 @@
                             </td>
                             <td class="px-6 py-4">
                                 @if ($promo->estaActivaHoy())
-                                    <span class="px-2.5 py-1 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest rounded-full bg-emerald-50 text-emerald-600">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span class="px-3 py-1 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest rounded-full bg-emerald-100 text-emerald-700">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                         Activa {{ $promo->activa ? '· switch' : '· calendario' }}
                                     </span>
                                 @else
-                                    <span class="px-2.5 py-1 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest rounded-full bg-gray-100 text-gray-400">
+                                    <span class="px-3 py-1 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest rounded-full bg-gray-100 text-gray-400">
                                         <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
                                         Inactiva
                                     </span>
@@ -159,14 +232,15 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center">
+                            <td colspan="5" class="px-6 py-14 text-center">
                                 <div class="flex flex-col items-center gap-3">
-                                    <span class="bg-gray-100 p-4 rounded-full">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <span class="bg-gradient-to-br from-amber-100 to-orange-100 p-5 rounded-full">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                         </svg>
                                     </span>
-                                    <p class="text-gray-400 text-sm">No hay promociones creadas. Agrega una desde el formulario de arriba.</p>
+                                    <p class="text-gray-500 text-sm font-semibold">Todavía no hay promociones creadas</p>
+                                    <p class="text-gray-400 text-xs">Agrega una desde el formulario de arriba para empezar</p>
                                 </div>
                             </td>
                         </tr>
